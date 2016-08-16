@@ -1,0 +1,281 @@
+\documentclass[12pt,a3paper]{article}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage[left=1cm,right=1cm,top=1cm,bottom=1.5cm,landscape]{geometry}
+\usepackage{color}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{amsthm}
+\usepackage{needspace}
+
+\newtheorem{lem}{Lemma}
+\parindent=0pt
+
+\input{listing.tex}
+
+\newcommand{\somethingfollows}{\needspace{2\baselineskip}}
+
+\newcommand{\ssrc}[2]{\somethingfollows\C{#1}
+	
+\setlength{\leftskip}{1.5em}
+
+#2
+
+\setlength{\leftskip}{0cm}\vspace{0.4em}}
+%\newcommand{\ssrc}[2]{\needspace{2\baselineskip}\C{#1}\vspace{0.4em}\\\hspace*{1.5em}\begin{minipage}{0.28\textwidth}#2 \hspace*{\fill}\end{minipage}\vspace{0.4em}}
+\newcommand{\caveat}[1]{\fbox{caveat}: #1}
+\begin{document}
+\pagestyle{empty}
+
+\begin{multicols*}{2}[\begin{center}\section*{\underbar{Basic Cheat Sheet}}\end{center}]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Rewriting}
+\ssrc{rewrite Eab (Exc b).}{
+  Rewrite with \C{Eab} left to right, then with \C{Exc} by
+  instantiating the first argument with \C{b}}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   Eab : a = b
+   Exc : forall x, x = c
+  =========
+   P a
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   Eab : a = b
+   Exc : forall x, x = c
+  =========
+   P c
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{rewrite -Eab \{\}Eac.}{
+Rewrite with \C{Eab} right to left then with \C{Eac}
+left to right, finally clear \C{Eac}}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   Eab : a = b
+   Eac : a = c
+  =========
+   P b
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   Eab : a = b
+  =========
+   P c
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+\ssrc{rewrite !addnA.}{
+Rewrite with \C{addnA}, associativity of addition, as many times as possible.}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  =========
+  a + (b + (c + d))
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  =========
+  a + b + c + d
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Reasoning by cases or by induction}
+
+\ssrc{case: n => [|p].}{Reson by cases on {\tt n}, name {\tt p} the predecessor}
+  \begin{tabular}{c@{$\to$}cc} 
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   n : nat
+  =========
+   P n 
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.08\textwidth}\begin{lstlisting}
+  =========
+   P 0
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   p : nat
+  =========
+   P p.+1
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\ssrc{elim: n => [|m IHm].}{Perform an induction on {\tt n}}
+  \begin{tabular}{c@{$\to$}cc} 
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   n : nat
+  =========
+   P n 
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.08\textwidth}\begin{lstlisting}
+  =========
+   P 0
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   m : nat
+   IHm : P m
+  =========
+   P m.+1
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+  \ssrc{elim: s => // x xs IHxs.}{Get rid of trivial goals,
+  hence no {\tt [ .. | .. ]}}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   s : seq nat
+  =========
+   P s 
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   x : nat
+   xs : seq nat
+   IHxs : P xs
+  =========
+   P (x :: xs)
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\columnbreak
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection*{Naming and processing assumptions}
+
+\ssrc{move=> x /lemma px}{
+  Name the first item \C{x} then
+  view the top item via \C{lemma} and name the result \C{qx}.
+  \C{lemma} has type \C{forall a, P a -> Q a}, or \C{reflect P Q}}.
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  =========
+   forall x,
+    P x -> R x -> G
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   x : T
+   qx : Q x
+  =========
+   R x -> G
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\ssrc{move=> /andP[/eqP-> pb]}{
+  Process the top item with the view \C{andP}, then destruct the
+  resulting conjunction, use \C{eqP} on the first item and then
+  rewrite with it, finally name the rest \C{pb}.}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.18\textwidth}\begin{lstlisting}
+  a, b : nat
+  =========
+  (a == 7) && 10 <= b -> a + 3 <= b
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  a, b : nat
+  pb : 10 <= b
+  =========
+   7 + 3 <= b
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\ssrc{move=> /= \{pa\}}{
+  Simplify the goal, then clear \C{pa} from the context}
+
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.18\textwidth}\begin{lstlisting}
+  a : nat
+  pa : a != 3
+  =========
+  (3 == 7) || (10 <= a)
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  a : nat
+  =========
+  (10 <= a)
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection*{Back and Forward chaining}
+
+\ssrc{apply: H.}{
+  Apply \C{H} to the current goal}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+   H : A -> B
+  =========
+   B
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  =========
+   A
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\ssrc{apply/subsetP.}{
+  Apply the view \C{subsetP} to the current goal}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.13\textwidth}\begin{lstlisting}
+   A, B : {set T}
+  =========
+   B \subset A
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.17\textwidth}\begin{lstlisting}
+   A, B : {set T}
+  =========
+   forall x, x \in B -> x \in A
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\ssrc{have pa : P a.}{
+  Open a new goal for \C{P a}. Once resolved
+  introduce a new entry in the context for it named \C{pa}}
+  \begin{tabular}{c@{$\to$}cc} 
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   a : T
+  =========
+   G
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   a : T
+  =========
+   P a
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.10\textwidth}\begin{lstlisting}
+   a : T
+   pa : P a
+  =========
+   G
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+\ssrc{by [].}{
+  Prove the goal by trivial means, or fail}
+  \begin{tabular}{c@{$\to$}c} 
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  =========
+   0 <= n
+  \end{lstlisting}\end{minipage}
+  &
+  \begin{minipage}{0.15\textwidth}\begin{lstlisting}
+  \end{lstlisting}\end{minipage}
+  \end{tabular}
+
+
+\end{multicols*}
+
+\end{document}
+
