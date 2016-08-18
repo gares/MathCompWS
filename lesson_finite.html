@@ -25,56 +25,52 @@ README:
 
 <!-- lesson -->
 
-<h1>lesson_finite</h1>
+<h1>Lesson 3 : Finite types</h1>
 <div><textarea id='coq-ta-1'>
+From mathcomp Require Import all_ssreflect.
 </textarea></div>
 <div>
-To play this document inside your browser use ALT-N and ALT-P.
+<p>To play this document inside your browser use ALT-N and ALT-P.</p>
 <hr/>
 
 <h2>
  Objective of this course
 </h2>
-
-  Understand the benefits and usage of finite types.
+<p>  Understand the benefits and usage of finite types.</p>
 <ul class="doclist">
   <li> formation principles
-
   </li>
-<li> new tools: finite functions and finite set theory
-
-</li>
-<li> A special case : ordinals
+  <li> A special case : ordinals</li>
+  <li> New tools: finite functions and finite set theory</li>
+  <li> Moving even closer to classical logic: choice and extensionality</li>
+</ul>
 <hr/>
 
-<h2>
- Formation principle
-</h2>
+<h2>Formation principle</h2>
 
 
-</li>
-<li> For a finite type, you can enumerate the elements
+<p>For a finite type, you can enumerate the elements
     the enumeration is a simple piece of data (based on sequences)
-
-</li>
-<li> The enumeration gives some computation principle
+</p>
+<ul class="doclist">
+<li> The enumeration gives some computation principle</li>
+<li> Elements of a finite type can be indexed</li>
+</ul>
 <hr/>
 
 </div>
 <div><textarea id='coq-ta-2'>
-From mathcomp Require Import all_ssreflect.
-
 </textarea></div>
 <div>
-the simplest finite types: ordinal numbers.
+<h2>the simplest finite types: ordinal numbers</h2>
 
-</li>
-<li> initial segments of natural numbers
+<p>initial segments of natural numbers</p>
 
-</li>
-<li> can be used as building blocks or yardsticks for other finite types. </div>
+<ul>
+<li> Building blocks or yardsticks for other finite types </div>
+<li> Usable as plain integers, thanks to coercions</li>
+</ul>
 <div><textarea id='coq-ta-3'>
-
 About Ordinal.
 
 Example two_in_I_4 := Ordinal (isT : 2 < 4).
@@ -86,36 +82,40 @@ Fail Example five_in_I_4 : Ordinal (isT : 5 < 4).
 
 Check inord.
 
+(* Beware of hidden coercions when reading these statements. *)
+
 Check inordK.
+
+Check inord_val.
 
 Example inord_val_3_4 : inord 2 = two_in_I_4 :> 'I_4.
 Proof.
 rewrite -[X in inord X]/(nat_of_ord two_in_I_4).
 rewrite inord_val. by [].
 Qed.
-
-(*
-  - In the rest of this talk I will use the following pattern to
-    verify that I have a finite type.
-*)
-
+</textarea></div>
+<div>
+<h2> Finite type constructions.</h2>
+<p>In the rest of this talk I will use the following pattern to
+    verify that I have a finite type.</p>
+<div><textarea id='coq-ta-4'>
 Check [finType of 'I_4].
 
 Fail Check [finType of nat].
-
 </textarea></div>
 <div>
-Finite type constructions.
-
-</li>
-<li> New finite types can be built from existing ones
-    ordinal types are the usual examples of finite types.
-    Cartesian product, Disjoint sum, subtype, function type.
-
-</li>
+<p> New finite types can be built from existing ones</p>
+<ul>
+  <li>ordinal types are the usual examples of basic finite types</li>
+  <li>unit (with one element)</li>
+  <li>bool (with two elements)</li>
+  <li>cartesian product</li>
+  <li>disjoint sum</li>
+  <li>subtype</li>
+  <li>function type</li>
 </ul>
 </div>
-<div><textarea id='coq-ta-4'>
+<div><textarea id='coq-ta-5'>
 
 Check [finType of 'I_4 * 'I_3].
 
@@ -130,9 +130,90 @@ Definition lesser_twin_100 :=
 
 Fail Check [finType of lesser_twin_100].
 
-(* There is a short solution to make lesser_twin_100 a finite type,
-   but it is not part of this lesson. *)
+(* There is a solution to make lesser_twin_100 a finite type.
+  It is not part of this lesson, but my attempt is available at the
+  end of this file. *)
 
+</textarea></div>
+<div>
+<h2>Building a finite type from scratch</h2>
+<p>An example: building one's own finite type. Show that it
+   is finite by exhibiting an injection into a finite type. </p>
+</div>
+<div><textarea id='coq-ta-6'>
+Module LessonSandBox1.
+
+Inductive card_point : predArgType := W | E | N | S.
+
+Definition cp2o d : 'I_4 :=
+  match d with
+    W => inord 0 | E => inord 1 | N => inord 2 | S => inord 3
+  end.
+
+Definition o2cp (n : 'I_4) :=
+  match val n with
+    0 => Some W | 1 => Some E | 2 => Some N | 3 => Some S | _ => None
+  end.
+
+Lemma cp_can : pcancel cp2o o2cp.
+Proof.
+case.
+rewrite /o2cp. rewrite /=. rewrite inordK. by []. by [].
+by rewrite /o2cp /= inordK.
+by rewrite /o2cp /= inordK.
+by rewrite /o2cp /= inordK.
+Qed.
+</textarea></div>
+<div>
+<p>The lemma cp_can means that there is an injection from
+  card_point into a known finite type.</p>
+<p>Helper theorems a succession of added qualities:
+<ul>
+<li>equality is decidable <tt>eqType</tt></li>
+<li>there is a canonical way to construct witness for every
+  satisfiable predicate <tt>choiceType</tt></li>
+<li>the elements can be enumerated <tt>countType</tt></li>
+<li>the type card_point is finite.</li>
+</ul>
+<p>Each must be made into a canonical structure for later user</p>
+</div>
+<div><textarea id='coq-ta-7'>
+
+Canonical cp_eqType := EqType card_point (PcanEqMixin cp_can).
+Canonical card_point_choiceType :=
+    ChoiceType card_point (PcanChoiceMixin cp_can).
+Canonical cp_countType :=
+    CountType card_point (PcanCountMixin cp_can).
+Canonical card_point_finType := FinType card_point (PcanFinMixin cp_can).
+
+Check [finType of card_point].
+
+End LessonSandBox1.
+
+</textarea></div>
+<div>
+<h2>Tools about finiteness</h2>
+<p>More classical logic</p>
+<ul class="doclist">
+  <li> Quantifications of decidable predicates become decidable.</li>
+  <li> Need to use special notations</li>
+</ul>
+ </div>
+  <div><textarea id='coq-ta-8'>
+  
+Check [forall x : 'I_4, x < 2] && [exists x :'I_4, 4 < x].
+
+Check [forall x : {x : 'I_100 | prime x}, 1 < x].
+
+(* talk about connect, as predicate on graph. *)
+</textarea></div>
+<h2>Appendix: how to make lesser_twin_100 a finite type.</h2>
+<p>Exhibit an injection from this type into a known finite type.</p>
+<ul class="doclist">
+  <li>Prove that it is an injection (find a left inverse)</li>
+  <li>Use a theorem to build a canonical instance of Finite type</li>
+</ul>
+<div><textarea id="coq-ta-9">
 Definition lesser_twin_100_in_ord (x : lesser_twin_100) : 'I_100.
 case : x => x /andP [_ px]; exact (Ordinal px).
 Defined.
@@ -158,63 +239,9 @@ case: (Sumbool.sumbool_of_bool (prime x && prime (x + 2))).
 by rewrite p1.
 Qed.
 
-Module LessonSandBox1.
+</textarea>
+</
 
-</textarea></div>
-<div>
-An example: building one's own finite type. Show that it
-   is finite by exhibiting an injection into a finite type. </div>
-<div><textarea id='coq-ta-5'>
-
-Inductive card_point : predArgType := W | E | N | S.
-
-Definition cp2o d : 'I_4 :=
-  match d with
-    W => inord 0 | E => inord 1 | N => inord 2 | S => inord 3
-  end.
-
-Definition o2cp (n : 'I_4) :=
-  match val n with
-    0 => Some W | 1 => Some E | 2 => Some N | 3 => Some S | _ => None
-  end.
-
-Lemma cp_can : pcancel cp2o o2cp.
-Proof. by case; rewrite /o2cp /= inordK. Qed.
-
-</textarea></div>
-<div>
-The lemma cp_can means that there is an injection from
-  card_point into a known finite type.  In one shot, this
-  gives us that card_point equality is decidable in card_point,
-  that there is a canonical way to construct witness for every
-  satisfiable predicate, that the elements can be enumerated,
-  and that the type card_point is finite. </div>
-<div><textarea id='coq-ta-6'>
-
-Canonical cp_eqType := EqType card_point (PcanEqMixin cp_can).
-Canonical card_point_choiceType :=
-    ChoiceType card_point (PcanChoiceMixin cp_can).
-Canonical cp_countType :=
-    CountType card_point (PcanCountMixin cp_can).
-Canonical card_point_finType := FinType card_point (PcanFinMixin cp_can).
-
-Check [finType of card_point].
-
-End LessonSandBox1.
-
-</textarea></div>
-<div>
-Tools about finiteness.
-<ul class="doclist">
-  <li> Quantifications of decidable predicates become decidable. </div>
-  <div><textarea id='coq-ta-7'>
-  
-Check [forall x : 'I_4, x < 2] && [exists x :'I_4, 4 < x].
-
-Check [forall x : {x : 'I_100 | prime x}, 1 < val x].
-
-(* talk about connect, as predicate on graph. *)
-</textarea></div>
 </div> <!-- /#document -->
 </div> <!-- /#code-wrapper -->
 </div> <!-- /#ide-wrapper  -->
@@ -224,7 +251,8 @@ Check [forall x : {x : 'I_100 | prime x}, 1 < val x].
 
 
    var coqdoc_ids = ['coq-ta-1',  'coq-ta-2',  'coq-ta-3',  'coq-ta-4', 
-                    'coq-ta-5',  'coq-ta-6',  'coq-ta-7'];
+                    'coq-ta-5',  'coq-ta-6',  'coq-ta-7', 'coq-ta-8',
+                    'coq-ta-9'];
     var coq;
 
     loadJsCoq('./jscoq/')
