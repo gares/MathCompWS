@@ -1,0 +1,18 @@
+#!/bin/bash
+
+sed -i '/<\/title>/i <\/title>\
+<style media=\"screen\" type=\"text/css\">\
+       @font-face {font-family: Blokletters;\
+       src:url(.\/Blokletters-Viltstift.ttf);\
+      }\
+	    li {\
+	    font-family:Blokletters;\
+	    }\
+	    h1 {\
+	    font-family:Blokletters;\
+	    }\
+	    h2 {\
+	    font-family:Blokletters;\
+	    }\
+	</style>\
+' $*
