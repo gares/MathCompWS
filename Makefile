@@ -23,3 +23,7 @@ cheatsheet.pdf:
 %.html : %.v
 	-$(COQC) $* # if not working, no links but html still ok
 	./udoc/udoc.byte $< -o $@
+
+
+run:
+	python -m http.server 8000
