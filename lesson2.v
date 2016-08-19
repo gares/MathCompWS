@@ -1,4 +1,4 @@
-From mathcomp Require Import all_ssreflect.
+From mathcomp Require Import all_ssreflect all_algebra all_fingroup.
 Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
@@ -6,14 +6,15 @@ Unset Printing Implicit Defensive.
 
 (**
 ----
-** Lesson 3 
+** Lesson 2 MathCompWS ITP'2016 
 *)
 
 
 (**
   ** Big operators
-   --  provide a library to manipulate iterations in SSR
-   -- this is an encapsulation of the fold function
+
+   - a library to manipulate cumulative operators
+   - an encapsulation of the fold function
  **)
 
 Section F.
@@ -22,11 +23,10 @@ Section F.
 Fixpoint foldr f z s := if s is x :: s' then f x (foldr f z s') else z.
 *)
 
-Definition f (x : nat) := x.*2.
+Definition f x := x.*2.
 Definition g x y := x + y.
 Definition r := [::1; 2; 3].
-
-Lemma bfold : foldr (fun val res => g (f val) res) 0 r = 12.
+Lemma bfold : foldr [eta (g \o f)] 0 r = 12.
 Proof.
 rewrite /=.
 rewrite /f.
@@ -39,13 +39,15 @@ End F.
 (** 
    ** Notation
 
-   - iteration is provided by the \big notation
-   - the basic operation is on list
-   - special notations are introduced for usual case (\sum, \prod, \bigcap ..) 
+   - the basic \big notation
+   - operations on elements of a list
+   - special notations for usual case (\sum, \prod, \bigcap ..) 
 *)
 
 Lemma bfoldl : \big[addn/0]_(i <- [::1; 2; 3]) i.*2 = 12.
 Proof.
+set bigop := BigOp.bigop.
+rewrite /bigop.
 rewrite big_cons.
 rewrite big_cons.
 rewrite big_cons.
@@ -55,6 +57,8 @@ Qed.
 
 Lemma bfoldlm : \big[muln/1]_(i <- [::1; 2; 3]) i.*2 = 48.
 Proof.
+set bigop := BigOp.bigop.
+rewrite /bigop.
 rewrite big_cons.
 rewrite big_cons.
 rewrite big_cons.
@@ -69,6 +73,8 @@ Qed.
 
 Lemma bfoldl1 : \sum_(1 <= i < 4) i.*2 = 12.
 Proof.
+set bigop := BigOp.bigop.
+rewrite /bigop.
 have bl := big_ltn.
 have be := big_geq.
 rewrite bl.
@@ -103,13 +109,16 @@ Qed.
 
 (** 
    ** Filtering 
-   - it is possible to filter elements from the range 
+   - selecting some elements of the range 
 *)
 
 Lemma bfoldl4 : \sum_(i <- [::1; 2; 3; 4; 5; 6] | ~~ odd i) i = 12.
 Proof.
+set bigop := BigOp.bigop.
+rewrite /bigop.
 have bp0 := big_pred0.
 have bC := big_hasC.
+have bmc := big_mkcond.
 pose x :=  \sum_(i < 8 | ~~ odd i) i.
 pose y :=  \sum_(0 <= i < 8 | ~~ odd i) i.
 rewrite big_cons.
@@ -130,7 +139,7 @@ Qed.
 
 (** 
    ** Switching range
-   - it is possible to change representation (big_nth, big_mkord).
+   - changing representation (big_nth, big_mkord).
 *)
 
 Lemma bswitch :  \sum_(i <- [::1; 2; 3]) i.*2 = \sum_(i < 3) (nth 0 [::1; 2; 3] i).*2.
@@ -143,9 +152,45 @@ rewrite big_mkord.
 by [].
 Qed.
 
+(** 
+   ** Few examples from the library
+*)
+
+(** 
+   - prime.v
+*)
+
+Check divn_count_dvd.
+Check logn_count_dvd.
+Check dvdn_sum.
+Check totient_count_coprime.
+Check totientE.
+
+
+(** 
+   - poly.v
+*)
+
+Check horner_sum.
+Check nderiv_taylor.
+
+(** 
+   - matrix.v
+*)
+
+Check expand_cofactor.
+Check expand_det_row.
+
+(** 
+   - vector.v
+*)
+
+Check sumv_sup.
+Check freeP.
+
 (**
   ** Big operators and equality
-  - one can exchange function and/or predicate 
+  - replacing function and/or predicate 
  *)
 
 Lemma beql : 
@@ -178,12 +223,12 @@ Qed.
 
 (**
   ** Monoid structure
-  - one can use associativity to reorder the bigop
+  - regrouping thanks to associativity
  *)
 
 Lemma bmon1 : \sum_(i <- [::1; 2; 3]) i.*2 = 12.
 Proof.
-have H := big_cat.
+have bc := big_cat.
 rewrite -[[::1; 2; 3]]/([::1] ++ [::2; 3]).
 rewrite big_cat.
 rewrite /=.
@@ -193,7 +238,7 @@ Qed.
 
 Lemma bmon2 : \sum_(1 <= i < 4) i.*2 = 12.
 Proof.
-have H := big_cat_nat.
+have bcn := big_cat_nat.
 rewrite (big_cat_nat _ _ _ (isT: 1 <= 2)).
   rewrite /=.
   rewrite big_ltn //=.
@@ -204,8 +249,8 @@ Qed.
 
 Lemma bmon3 : \sum_(i < 4) i.*2 = 12.
 Proof.
-have H := big_ord_recl.
-have H1 := big_ord_recr.
+have borl := big_ord_recl.
+have borr := big_ord_recr.
 rewrite big_ord_recr.
 rewrite /=.
 rewrite !big_ord_recr //=.
@@ -225,14 +270,14 @@ Qed.
 
 (**
   ** Abelian Monoid structure
-  - one can use communitativity to massage the bigop
+  - dispatching thanks to communitativity
  *)
 
 
 Lemma bab : \sum_(i < 4) i.*2 = 12.
 Proof.
-have H := bigD1.
-pose x := Ordinal (isT: 2 < 4).
+have bd1 := bigD1.
+pose x := Ordinal (isT : 2 < 4).
 rewrite (bigD1 x).
   rewrite /=.
   rewrite big_mkcond /=.
@@ -258,13 +303,13 @@ rewrite /=.
 apply: eq_bigr.
 move=> i _.
 apply: eq_bigr.
-move=> j _.
+move=>   j _.
 by rewrite addnC.
 Qed.
 
 (**
   ** Distributivity
-  - one can use exchange sum and product 
+  - exchanging sum and product 
  *)
 
 Lemma bab3 : \sum_(i < 4) (2 * i) = 2 * \sum_(i < 4) i.
@@ -291,14 +336,15 @@ Qed.
 
 
 (**
-  ** Property, Relation and Morphism 
+  ** Property, Relation and Morphism
+   - higher-order properties 
  *)
 
 Lemma bap n : ~~ odd (\sum_(i < n) i.*2). 
 Proof.
-have H := big_ind.
-have H1 := big_ind2.
-have H2 := big_morph.
+have bi := big_ind.
+have bi2 := big_ind2.
+have bm := big_morph.
 elim/big_ind: _.
 - by [].
 - move=> x y.
@@ -309,6 +355,5 @@ elim/big_ind: _.
 move=> i _.
 by rewrite odd_double.
 Qed.
-
 
 
