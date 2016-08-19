@@ -86,6 +86,7 @@ Local Notation "~~ b" := (negb b).
 Lemma negbK b : ~~ ~~ b = b.
 Proof.
 (*D*) case: b.
+(*D*)   by [].
 (*D*) by []. Qed.
 
 Definition andb b1 b2 :=
@@ -110,7 +111,13 @@ End BoolLogic.
 
 (** ** Objective: infitude of primes
 
-proof sketch
+Every natural number greater than 1 has at least one prime divisor. 
+	
+If we take m! + 1, then such prime divisor p can be shown to be grater
+than m as follows.
+By contra position we assume p ≤ m and we show p - m! + 1. Being smaller
+than m, p|m!, hence to divide m! + 1, p should divide 1, that is not possible
+since p is prime, hence greater than 1.
 
 -------------------------------------------- *)
 
@@ -161,14 +168,25 @@ to say:
 Module PropLogic.
 
 Inductive and (A B:Prop) : Prop :=
-  conj : A -> B -> A /\ B.
+  conj : A -> B -> and A B.
 
 Local Notation "A /\ B" := (and A B).
 
-Inductive ex (A:Type) (P:A -> Prop) : Prop :=
-  ex_intro : forall x:A, P x -> ex (A:=A) P.
+Lemma andC A B : A /\ B <-> B /\ A.
+Proof.
+by split; move=> [a b]; split.
+ Qed.
 
-Local Notation "'exists' x , p" := (ex (fun x => p)).
+Inductive ex A (P : A -> Prop) : Prop :=
+  ex_intro : forall x, P x -> ex A P.
+
+Local Notation "'exists' x , p" := (ex (fun x => p)) (at level 200).
+
+Lemma andP (a b : bool) : reflect (a /\ b) (a && b).
+Proof.
+apply: (iffP idP); last by move=> [-> ->].
+case: a; case: b => //.
+Admitted.
 
 End PropLogic.
 
@@ -191,10 +209,10 @@ Proof.
 (*D*) by case/orP=> [/eqP-> | /IHn]; [apply: dvdn_mulr | apply: dvdn_mull].
 (*D*) Qed.
 
-Lemma prime_above m : exists2 p, m < p & prime p.
+Lemma prime_above m : exists p, prime p && m < p.
 Proof.
 (*D*) have /pdivP[p pr_p p_dv_m1]: 1 < m`! + 1 by rewrite addn1 ltnS fact_gt0.
-(*D*) exists p => //; rewrite ltnNge; apply: contraL p_dv_m1 => p_le_m.
+(*D*) exists p; rewrite pr_p /= ltnNge; apply: contraL p_dv_m1 => p_le_m.
 (*D*) by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
 (*D*) Qed.
 
