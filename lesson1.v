@@ -1,41 +1,52 @@
+From mathcomp Require Import all_ssreflect.
 (** * Mathematical Components, an introduction
 
-objective and talks
--------------------------------------------- *)
+ - Welcome!
+ - Objective: help you enter the MC library
+*) 
+
+(** -------------------------------------------- *)
 
 (** ** Spam
 
-the book
+#<a href="http://math-comp.github.io/math-comp/book">Mathematical Components (the book)</a>#
+
+#<img src="http://math-comp.github.io/math-comp/book/cover-front-web.png"/>#
+
 -------------------------------------------- *)
 
-(** ** Lesson 1: SSR
+(** ** Propaganda
 
-    Tactic language
-    Boolean reflection
--------------------------------------------- *)
+ - For Isabelle users: it is like HOL
+ - For Coq users: it is simpler
+ - For newcomers: it works
+*)
+
+(** -------------------------------------------- *)
+
+(** ** Lesson 1 (of 4)
+
+ - Boolean reflection
+ - Tactic language
+*)
+
+(** -------------------------------------------- *)
 
 (** ** Boolean reflection in a nutshell
 
-    Bool datatype is simple
-    Symbolic computation is automation
--------------------------------------------- *)
+ - Bool datatype to represent mere propositions
+ - Symbolic computation is a predictable, pervasive,
+   form of automation
+*)
+
+(** -------------------------------------------- *)
 
 (** ** The emblematic example
 
-to say:
- - .+1
- - lt
- - = true
- - = mean equiv
- - by []
- - elim
- - apply
- - rewrite
+to say: .+1 , lt , = true , = mean equiv , by [] , elim , apply , rewrite
  
 *)
 
-
-From mathcomp Require Import all_ssreflect.
 Module Leq.
 
 Fixpoint leq (m n : nat) : bool :=
@@ -53,29 +64,34 @@ Eval compute in 6 <= 4.
 
 Lemma leq0n n : (0 <= n) = true.
 Proof.
-(*D*)by []. Qed.
+by [].
+Qed.
 
 Lemma ltnS m n : (m.+1 <= n.+1) = (m <= n).
 Proof.
-(*D*)by []. Qed.
+by [].
+Qed.
 
 Lemma leqnn n : n <= n.
 Proof.
-(*D*) elim: n => [|m IHm].
-(*D*)   by apply: leq0n.
-(*D*) rewrite ltnS.
-(*D*) by [].
-(*D*) Qed.
+elim: n => [|m IHm].
+  by apply: leq0n.
+rewrite ltnS.
+by [].
+Qed.
 
 End Leq.
 
+(** -------------------------------------------- *)
+
 (** ** A logic in bool
 
-to say: 
- - andb negb orb
- - case
+ - One can also place conectives in bool
+ - Here symbolic computation means progress
+ - In bool EM holds 
 
-boolean connective, computation is progress, proof by cases *)
+#ssrbool#
+*)
 
 Module BoolLogic.
 
@@ -85,73 +101,83 @@ Local Notation "~~ b" := (negb b).
 
 Lemma negbK b : ~~ ~~ b = b.
 Proof.
-(*D*) case: b.
-(*D*)   by [].
-(*D*) by []. Qed.
+case: b.
+  by [].
+by [].
+Qed.
 
 Definition andb b1 b2 :=
-(*D*) if b1 then b2 else false.
+  if b1 then b2 else false.
 
 Local Notation "a && b" := (andb a b).
 
 Lemma andbC b1 b2 : b1 && b2 = b2 && b1.
 Proof.
-(*D*) by case: b1; case: b2. Qed.
+by case: b1; case: b2.
+Qed.
 
 Definition orb b1 b2 :=
-(*D*) if b1 then true else b2.
+  if b1 then true else b2.
 
 Local Notation "a || b" := (orb a b).
 
 Lemma negb_and b1 b2 : ~~ (b1 && b2) = ~~ b1 || ~~ b2.
 Proof.
-(*D*) by case: b1; case: b2. Qed.
+by case: b1; case: b2.
+Qed.
 
 End BoolLogic.
 
+(** -------------------------------------------- *)
+
 (** ** Objective: infitude of primes
 
+Let's take a number m and exhibit a prime bigger than it.
+
 Every natural number greater than 1 has at least one prime divisor. 
-	
 If we take m! + 1, then such prime divisor p can be shown to be grater
 than m as follows.
-By contra position we assume p ≤ m and we show p - m! + 1. Being smaller
-than m, p|m!, hence to divide m! + 1, p should divide 1, that is not possible
-since p is prime, hence greater than 1.
 
--------------------------------------------- *)
+By contra position we assume p <= m and we show p does not divide m! + 1.
 
-(** ** Requirements:
+Being smaller than m, p|m!, hence to divide m! + 1, p should divide 1, 
+that is not possible since p is prime, hence greater than 1.
+*)
 
-we need arithmetic (and a library)!
-A bit of arithmetic, ssr style
+(** -------------------------------------------- *)
 
-to say:
- - move
- - rewrite //
- - Search
- - .. le .. le ..
+(** ** Some arithmetic
 
--------------------------------------------- *)
+#ssrnat#
+#div#
+#prime#
 
-About dvdn_fact.
-About contraL.
+to say: move, rewrite //, Search, [.. <= .. <= ..]
+
+<<
+Lemma contraL c b : (c -> ~~ b) -> b -> ~~ c.
+Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
+Lemma gtnNdvd n d : 0 < n -> n < d -> (d %| n) = false.
+Lemma dvdn_addr m d n : d %| m -> (d %| m + n) = (d %| n).
+Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
+>>
+*)
 
 Lemma example m p : prime p ->
   p %| m `! + 1 -> ~~ (p <= m).
 Proof.
-(*D*) move=> prime_p.
-(*D*) apply: contraL.
-(*D*) move=> leq_p_m.
-(*D*) rewrite dvdn_addr.
-(*D*)   rewrite gtnNdvd.
-(*D*)     by [].
-(*D*)     by [].
-(*D*)   by apply: prime_gt1.
-(*D*) apply: dvdn_fact.
-(*D*) rewrite leq_p_m andbT.
-(*D*) by apply: prime_gt0.
-(*D*) Qed.
+move=> prime_p.
+apply: contraL.
+move=> leq_p_m.
+rewrite dvdn_addr.
+  rewrite gtnNdvd.
+    by [].
+    by [].
+  by apply: prime_gt1.
+apply: dvdn_fact.
+rewrite leq_p_m andbT.
+by apply: prime_gt0.
+Qed.
 
 (** -------------------------------------------- *)
 

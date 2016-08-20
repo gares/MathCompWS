@@ -21,9 +21,12 @@ basic-cheatsheet.pdf:
 cheatsheet.pdf:
 	make -C ssr-cheat-sheet && cp ssr-cheat-sheet/cheatsheet.pdf $@
 
-%.html : %.v
+%.html : %.v Makefile
 	-$(COQC) $* # if not working, no links but html still ok
 	./udoc/udoc.byte $< -o $@
+	sed -i 's?^ *<title.*?<title>$*</title>?' $@
+	sed -i 's?^ *<h1>$*</h1>??' $@
+	sed -i '/<\/title>/a\<link rel="stylesheet" href="local.css" />' $@
 
 
 run:
