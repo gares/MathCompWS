@@ -1,47 +1,55 @@
 From mathcomp Require Import all_ssreflect.
-(** * Mathematical Components, an introduction
+(** #<div class='slide vfill'># 
+* Mathematical Components, an introduction
+
 
  - Welcome!
  - Objective: help you enter the MC library
-*) 
+#</div># *) 
 
 (** -------------------------------------------- *)
 
-(** ** Spam
+(** #<div class='slide vfill'># 
+** Spam
 
 #<a href="http://math-comp.github.io/math-comp/book">Mathematical Components (the book)</a>#
 
 #<img src="http://math-comp.github.io/math-comp/book/cover-front-web.png"/>#
 
+#</div>#
 -------------------------------------------- *)
 
-(** ** Propaganda
+(** #<div class='slide vfill'>#  
+** Propaganda
 
  - For Isabelle users: it is like HOL
  - For Coq users: it is simpler
  - For newcomers: it works
-*)
+#</div># *)
 
 (** -------------------------------------------- *)
 
-(** ** Lesson 1 (of 4)
+(** #<div class='slide vfill'>#  
+** Lesson 1 (of 4)
 
  - Boolean reflection
  - Tactic language
-*)
+#</div># *)
 
 (** -------------------------------------------- *)
 
-(** ** Boolean reflection in a nutshell
+(** #<div class='slide vfill'>#  
+** Boolean reflection in a nutshell
 
  - Bool datatype to represent mere propositions
  - Symbolic computation is a predictable, pervasive,
    form of automation
-*)
+#</div># *)
 
 (** -------------------------------------------- *)
 
-(** ** The emblematic example
+(** #<div class='slide'># 
+** The emblematic example
 
 to say: .+1 , lt , = true , = mean equiv , by [] , elim , apply , rewrite
  
@@ -82,15 +90,17 @@ Qed.
 
 End Leq.
 
-(** -------------------------------------------- *)
 
-(** ** A logic in bool
+(** -------------------------------------------- *)
+  
+(** #<div class='slide'># 
+** A logic in bool
 
  - One can also place conectives in bool
  - Here symbolic computation means progress
  - In bool EM holds 
 
-#ssrbool#
+#<a class='file' href='http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.ssrbool.html'>ssrbool</a>#
 *)
 
 Module BoolLogic.
@@ -130,7 +140,8 @@ End BoolLogic.
 
 (** -------------------------------------------- *)
 
-(** ** Objective: infitude of primes
+(** #<div class='slide vfill'>#  
+** Objective: infitude of primes
 
 Let's take a number m and exhibit a prime bigger than it.
 
@@ -142,15 +153,16 @@ By contra position we assume p <= m and we show p does not divide m! + 1.
 
 Being smaller than m, p|m!, hence to divide m! + 1, p should divide 1, 
 that is not possible since p is prime, hence greater than 1.
-*)
+#</div># *)
 
 (** -------------------------------------------- *)
 
-(** ** Some arithmetic
+(** #<div class='slide'># 
+** Some arithmetic
 
-#ssrnat#
-#div#
-#prime#
+#<a class='file' href='http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.ssrnat.html'>ssrnat</a>#
+#<a class='file' href='http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.prime.html'>prime</a>#
+#<a class='file' href='http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.div.html'>div</a>#
 
 to say: move, rewrite //, Search, [.. <= .. <= ..]
 
@@ -167,50 +179,61 @@ Lemma example m p : prime p ->
   p %| m `! + 1 -> ~~ (p <= m).
 Proof.
 move=> prime_p.
+Search "contra".
 apply: contraL.
 move=> leq_p_m.
+Search dvdn addn.
 rewrite dvdn_addr.
+  Search eq (_ < _) (_ %| _).
   rewrite gtnNdvd.
     by [].
     by [].
+  Search leq prime.
   by apply: prime_gt1.
 apply: dvdn_fact.
 rewrite leq_p_m andbT.
-by apply: prime_gt0.
+by apply: prime_gt0. 
 Qed.
+
 
 (** -------------------------------------------- *)
 
-(** ** Bool is not enough
+(** #<div class='slide'># 
+** Bool is not enough
 
-bla
+ - The bool data type is not closed under general quantifiers
+ - Coq provides the [Prop] world for propositions
+ - We need a way to relate the two worlds
 
-to say: 
-  - exists/curry howard
-  - bool/Prop
-  - reflect
+to say: exists/curry howard, bool/Prop, reflect
+
 *)
 
 Module PropLogic.
 
 Inductive and (A B:Prop) : Prop :=
-  conj : A -> B -> and A B.
+  conj (a : A) (b : B).
 
 Local Notation "A /\ B" := (and A B).
 
 Lemma andC A B : A /\ B <-> B /\ A.
 Proof.
-by split; move=> [a b]; split.
- Qed.
+split.
+   move=> [a b].
+   by split.
+move=> [a b].
+by split.
+Qed.
 
 Inductive ex A (P : A -> Prop) : Prop :=
-  ex_intro : forall x, P x -> ex A P.
+  ex_intro (x : A) (px : P x).
 
 Local Notation "'exists' x , p" := (ex (fun x => p)) (at level 200).
 
 Lemma andP (a b : bool) : reflect (a /\ b) (a && b).
 Proof.
-apply: (iffP idP); last by move=> [-> ->].
+apply: (iffP idP); 
+  last by move=> [-> ->].
 case: a; case: b => //.
 Admitted.
 
@@ -218,7 +241,11 @@ End PropLogic.
 
 (** -------------------------------------------- *)
 
-(** ** Views and intro patterns
+(** #<div class='slide'># 
+** Views and intro patterns
+  - Two ways to use a "reflect"
+   
+#<div id='here'></div>#
 
 to say:
  - move= /andP[]
@@ -227,19 +254,58 @@ to say:
 
 -------------------------------------------- *)
 
-(** ** Infinitude of primes *)
+(** #<div class='slide'># 
+** Infinitude of primes 
+<<
+Lemma pdivP n : 1 < n -> exists2 p, prime p & p %| n.	
+Lemma dvdn_mull d m n : d %| n -> d %| m * n.
+Lemma dvdn_mulr d m n : d %| m -> d %| m * n.
+>>
+*)
 
 Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
 Proof.
-(*D*) case: m => //= m; elim: n => //= n IHn; rewrite ltnS leq_eqVlt.
-(*D*) by case/orP=> [/eqP-> | /IHn]; [apply: dvdn_mulr | apply: dvdn_mull].
-(*D*) Qed.
+case: m => //= m.
+elim: n => //= n IHn.
+rewrite ltnS leq_eqVlt.
+move=> /orP xxx.
+case: xxx => [ /eqP-> | /IHn ].
+  by apply: dvdn_mulr.
+by apply: dvdn_mull.
+Qed.
 
-Lemma prime_above m : exists p, prime p && m < p.
+Lemma prime_above m : exists2 p, prime p & m < p.
 Proof.
-(*D*) have /pdivP[p pr_p p_dv_m1]: 1 < m`! + 1 by rewrite addn1 ltnS fact_gt0.
-(*D*) exists p; rewrite pr_p /= ltnNge; apply: contraL p_dv_m1 => p_le_m.
-(*D*) by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
-(*D*) Qed.
+have /pdivP[p pr_p p_dv_m1]: 1 < m`! + 1 by rewrite addn1 ltnS fact_gt0.
+exists p => //. rewrite /= ltnNge.
+apply: contraL p_dv_m1 => p_le_m.
+by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
+Qed.
 
+(** -------------------------------------------- *)
 
+(**
+#
+<div id='prev' onclick='prev_slide()'></div>
+<div id='next' onclick='next_slide()'></div>
+<script>
+alignWithTop = true;
+current = 0;
+window.onload = function() {
+  slides = document.getElementsByClassName('slide');
+}
+function next_slide() {
+  current++;
+  if (current >= slides.length) { current = slides.length - 1; }
+  var element = slides[current];
+  console.log(element);
+  element.scrollIntoView(alignWithTop);
+}
+function prev_slide() {
+  current--;
+  if (current < 0) { current = 0; }
+  var element = slides[current];
+  element.scrollIntoView(alignWithTop);
+}
+</script>
+# *)
