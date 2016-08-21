@@ -28,6 +28,8 @@ cheatsheet.pdf:
 	sed -i 's?^ *<h1>$*</h1>??' $@
 	sed -i '/<\/title>/a\<link rel="stylesheet" href="local.css" />' $@
 
-
+ex2 : # to get nice fonts for lesson2 and exercise2
+	./sedfont exercise2.html
+	./sedfont lesson2.html
 run:
 	python -m http.server 8000
