@@ -141,7 +141,7 @@ End BoolLogic.
 (** -------------------------------------------- *)
 
 (** #<div class='slide vfill'>#  
-** Objective: infitude of primes
+** Objective: infinitude of primes
 
 Let's take a number m and exhibit a prime bigger than it.
 
@@ -175,6 +175,8 @@ Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
 >>
 *)
 
+Module ExampleArith.
+
 Lemma example m p : prime p ->
   p %| m `! + 1 -> ~~ (p <= m).
 Proof.
@@ -195,6 +197,7 @@ rewrite leq_p_m andbT.
 by apply: prime_gt0. 
 Qed.
 
+End ExampleArith.
 
 (** -------------------------------------------- *)
 
@@ -263,6 +266,8 @@ Lemma dvdn_mulr d m n : d %| m -> d %| m * n.
 >>
 *)
 
+Module Primes.
+
 Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
 Proof.
 case: m => //= m.
@@ -281,6 +286,8 @@ exists p => //. rewrite /= ltnNge.
 apply: contraL p_dv_m1 => p_le_m.
 by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
 Qed.
+
+End Primes.
 
 (** -------------------------------------------- *)
 
