@@ -5,9 +5,12 @@ Set Implicit Arguments.
 Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
+Lemma sum_ord_const n m : \sum_(i < n) m = n * m.
+Proof. by rewrite sum_nat_const card_ord. Qed.
 
-Lemma sum_ord_const n m :  \sum_(i < n) m = n * m.
-Proof.  by rewrite sum_nat_const card_ord. Qed.
+(** -------------------------------------------- *)
+
+(** #<div class='slide'># *)
 
 (** 
   ----
@@ -18,97 +21,82 @@ Proof.  by rewrite sum_nat_const card_ord. Qed.
    Prove the following state by induction and by following Gauss proof.
  *)
 
-Lemma gauss_ex : forall n, (\sum_(i < n) i).*2 = n * n.-1.
+Lemma gauss_ex n : (\sum_(i < n) i).*2 = n * n.-1.
 Proof.
+Qed.
 
-(**
-   -----
-  ** Hints 
-   Different proofs are possible. Try them both!
+(** Hints
 
-   *** The direct one by simple induction
-   - base case : 
+induction *)
 
-Search _ (\big[_/_]_(_ < 0 | _ ) _).
+Check big_ord_recr.
+Check big_ord0.
+Check doubleD.
+Check muln2.
+Check mulnDr.
+Check addn2.
+Check mulnC.
 
-   - inductive case : 
+(** Hints
 
-Search _ (_.*2) (_ * _).
+Gauss (1 + 2 + 3).*2 = (1 + 2 + 3) + (3 + 2 + 1) = ((1 + 3) + (2 + 2) + (3 + 1) *)
 
-Search _ muln ""D"".
-
-Search _ muln ""C"".
-
-   *** The tricky one without induction
-
-       (1 + 2 + 3).*2 = (1 + 2 + 3) + (3 + 2 + 1) = ((1 + 3) + (2 + 2) + (3 + 1))
-                      = 4 * 3
-
-
-
-Check rev_ord_proof.
- 
-Print rev_ord.
- 
-Check (reindex_inj rev_ord_inj).
-
+Check addnn.
+Check reindex_inj.
 Check big_split.
+Check sum_ord_const.
+Print rev_ord.
+Check rev_ord_proof.
+Check rev_ord_inj.
+Check eq_bigr.
 
-Search _ (_.*2) (_ + _).
+(** -------------------------------------------- *)
 
-Check  sum_ord_const.
+(** #<div class='slide'># *)
 
-*)
 
 (** 
   ----
    ** Exercise 2
 *)
 
-Lemma sum_odd1 : forall n, \sum_(i < n) (2 * i + 1) = n ^ 2.
+Lemma sum_odd1 n : \sum_(i < n) (2 * i + 1) = n ^ 2.
 Proof.
 Qed.
 
-(**
-   -----
-  ** Hints 
+(** Hints *)
 
 Check big_split.
-
 Check big_distrr.
+Check mul2n.
+Check mulnDr.
+Check addn1.
 
-Chek gauss_ex.
+(** -------------------------------------------- *)
 
-Check sum_ord_const.
+(** #<div class='slide'># *)
 
-*)
 
 (** 
   ----
   ** Exercise 3
 *)
 
-Lemma sum_exp : forall x n, x ^ n.+1 - 1 = (x - 1) * \sum_(i < n.+1) x ^ i.
+Lemma sum_exp x n : x ^ n.+1 - 1 = (x - 1) * \sum_(i < n.+1) x ^ i.
 Proof.
 Qed.
 
-(**
-   -----
-  ** Hints 
+(** Hints *)
 
 Check mulnBl.
-
 Check big_distrr.
-
 Check big_ord_recr.
-
-Check big_ord_recl.
-
 Check eq_bigr.
 
-Check expnS.
 
-*)
+(** -------------------------------------------- *)
+
+(** #<div class='slide'># *)
 
 
 (**
@@ -119,20 +107,21 @@ Check expnS.
 (** Prove the following state by induction and by using a similar trick
    as for Gauss noticing that n ^ 3 = n * (n ^ 2) *)
 
-Lemma bound_square : forall n, \sum_(i < n) i ^ 2 <= n ^ 3.
+Lemma bound_square n : \sum_(i < n) i ^ 2 <= n ^ 3.
 Proof.
+Qed.
 
-(**
-   -----
-  ** Hints 
-
-Check expnS.
-
-Check sum_ord_const.
+(** Hints *)
 
 Check big_ind2.
+Check leq_add.
+Check leq_exp2r.
+Check expnS.
+Check ltnW.
 
-*)
+(** -------------------------------------------- *)
+
+(** #<div class='slide'># *)
 
 
 (**
@@ -159,10 +148,16 @@ Hypothesis op2add : forall x y, op2 x y = x + y.
 Canonical Structure op2Mon : Monoid.law 0 :=
   Monoid.Law op2A op20n op2n0.
 
+(** Prove that *)
 Lemma ex_op2 : \big[op2/0]_(i < 3) i = 3.
-Proof. by rewrite !big_ord_recr big_ord0 /= !op2add. Qed.
+Proof.
+Qed.
 
 End cex.
+
+(** -------------------------------------------- *)
+
+(** #<div class='slide'># *)
 
 
 (** 
@@ -197,3 +192,90 @@ Definition sumC n (p : parking n) j := \sum_(i < n) p i j.
    that have the same numbers of cars 
 *)
 
+(**
+#
+<script>
+alignWithTop = true;
+current = 0;
+slides = [];
+function select_current() {
+  for (var i = 0; i < slides.length; i++) {
+    var s = document.getElementById('slideno' + i);
+    if (i == current) {
+      s.setAttribute('class','slideno selected');
+    } else {
+      s.setAttribute('class','slideno');
+    }
+  }	
+}
+function init_slides() {
+  var toolbar = document.getElementById('panel-wrapper');
+  if (toolbar) {
+  var tools = document.createElement("div");
+  var tprev = document.createElement("div");
+  var tnext = document.createElement("div");
+  tools.setAttribute('id','tools');
+  tprev.setAttribute('id','prev');
+  tprev.setAttribute('onclick','prev_slide();');
+  tnext.setAttribute('id','next');
+  tnext.setAttribute('onclick','next_slide();');
+  toolbar.appendChild(tools);
+  tools.appendChild(tprev);
+  tools.appendChild(tnext);
+  
+  slides = document.getElementsByClassName('slide');
+  for (var i = 0; i < slides.length; i++) {
+    var s = document.createElement("div");
+    s.setAttribute('id','slideno' + i);
+    s.setAttribute('class','slideno');
+    s.setAttribute('onclick','goto_slide('+ i +');');
+    s.innerHTML = i;
+    tools.appendChild(s);
+  }
+  select_current();
+  } else {
+  //retry later
+  setTimeout(init_slides,100);	  
+  }
+}
+function on_screen(rect) {
+  return (
+    rect.top >= 0 &&
+    rect.top <= (window.innerHeight || document.documentElement.clientHeight)
+  );
+}
+function update_scrolled(){
+  for (var i = 0; i < slides.length; i++) {
+    var rect = slides[i].getBoundingClientRect();
+      if (on_screen(rect)) {
+        current = i;
+        select_current();	
+    }
+  }
+}
+function goto_slide(n) {
+  current = n;
+  var element = slides[current];
+  console.log(element);
+  element.scrollIntoView(alignWithTop);
+  select_current();
+}
+function next_slide() {
+  current++;
+  if (current >= slides.length) { current = slides.length - 1; }
+  var element = slides[current];
+  console.log(element);
+  element.scrollIntoView(alignWithTop);
+  select_current();
+}
+function prev_slide() {
+  current--;
+  if (current < 0) { current = 0; }
+  var element = slides[current];
+  element.scrollIntoView(alignWithTop);
+  select_current();
+}
+window.onload = init_slides;
+window.onscroll = update_scrolled;
+</script>
+# *)

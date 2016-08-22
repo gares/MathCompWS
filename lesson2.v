@@ -4,18 +4,20 @@ Unset Strict Implicit.
 Unset Printing Implicit Defensive.
 
 
-(**
-----
+(** -------------------------------------------- *)
+
+(** #<div class='slide'># 
+
 ** Lesson 2 MathCompWS ITP'2016 
-*)
+#</div># *)
 
 
-(**
-  ** Big operators
+(** #<div class='slide'># 
+** Big operators
 
    - a library to manipulate cumulative operators
    - an encapsulation of the fold function
- **)
+*)
 
 Section F.
 
@@ -36,7 +38,12 @@ Qed.
 
 End F.
 
-(** 
+(** #</div># *)
+
+(** -------------------------------------------- *)
+
+(**  #<div class='slide'>#  
+
    ** Notation
 
    - the basic \big notation
@@ -66,7 +73,11 @@ rewrite big_nil.
 by [].
 Qed.
 
-(** 
+(** #</div># *)
+
+(** -------------------------------------------- *)
+
+(**  #<div class='slide'>#  
    ** Range 
    - different ranges are provided
 *)
@@ -90,6 +101,9 @@ Qed.
 
 Lemma bfoldl2 : \sum_(i < 4) i.*2 = 12.
 Proof.
+set bigop := BigOp.bigop.
+Print ordinal.
+rewrite /bigop.
 rewrite big_ord_recl.
 Check lift.
 Print bump.
@@ -107,7 +121,12 @@ Proof.
 exact: bfoldl2.
 Qed.
 
-(** 
+
+(** #</div># *)
+
+(** -------------------------------------------- *)
+
+(**  #<div class='slide'>#  
    ** Filtering 
    - selecting some elements of the range 
 *)
@@ -137,12 +156,18 @@ rewrite big_nil.
 by [].
 Qed.
 
-(** 
+
+(** #</div># *)
+
+(** -------------------------------------------- *)
+
+(**  #<div class='slide'>#  
    ** Switching range
    - changing representation (big_nth, big_mkord).
 *)
 
-Lemma bswitch :  \sum_(i <- [::1; 2; 3]) i.*2 = \sum_(i < 3) (nth 0 [::1; 2; 3] i).*2.
+Lemma bswitch :  
+  \sum_(i <- [::1; 2; 3]) i.*2 = \sum_(i < 3) (nth 0 [::1; 2; 3] i).*2.
 Proof.
 have bn := big_nth.
 rewrite (big_nth 0).
@@ -152,7 +177,12 @@ rewrite big_mkord.
 by [].
 Qed.
 
-(** 
+
+(** #</div># *)
+
+(** -------------------------------------------- *)
+
+(**  #<div class='slide'>#  
    ** Few examples from the library
 *)
 
@@ -167,14 +197,14 @@ Check totient_count_coprime.
 Check totientE.
 
 
-(** 
-   - poly.v
+(**- poly.v
 *)
 
 Check horner_sum.
 Check nderiv_taylor.
 
-(** 
+(**
+
    - matrix.v
 *)
 
@@ -188,7 +218,12 @@ Check expand_det_row.
 Check sumv_sup.
 Check freeP.
 
-(**
+
+(** #</div># *)
+
+(** -------------------------------------------- *)
+
+(**  #<div class='slide'>#  
   ** Big operators and equality
   - replacing function and/or predicate 
  *)
@@ -221,7 +256,11 @@ apply: eq_big => [n|i Hi]; first by case: odd.
 by rewrite addnn.
 Qed.
 
-(**
+(** #</div># *)
+
+(** -------------------------------------------- *)
+
+(**  #<div class='slide'>#  
   ** Monoid structure
   - regrouping thanks to associativity
  *)
@@ -268,7 +307,11 @@ rewrite big_ord0.
 by [].
 Qed.
 
-(**
+(** #</div># *)
+
+(** -------------------------------------------- *)
+
+(**  #<div class='slide'>#  
   ** Abelian Monoid structure
   - dispatching thanks to communitativity
  *)
@@ -294,7 +337,8 @@ rewrite !big_ord_recr ?big_ord0 /=.
 by [].
 Qed.
 
-Lemma bab2 : \sum_(i < 3) \sum_(j < 4) (i + j) = \sum_(i < 4) \sum_(j < 3) (i + j).
+Lemma bab2 :
+  \sum_(i < 3) \sum_(j < 4) (i + j) = \sum_(i < 4) \sum_(j < 3) (i + j).
 Proof.
 have H := exchange_big.
 have H1 := reindex_inj.
@@ -307,7 +351,11 @@ move=>   j _.
 by rewrite addnC.
 Qed.
 
-(**
+(** #</div># *)
+
+(** -------------------------------------------- *)
+
+(**  #<div class='slide'>#  
   ** Distributivity
   - exchanging sum and product 
  *)
@@ -334,8 +382,11 @@ rewrite /=.
 by [].
 Qed.
 
+(** #</div># *)
 
-(**
+(** -------------------------------------------- *)
+
+(**  #<div class='slide'>#  
   ** Property, Relation and Morphism
    - higher-order properties 
  *)
@@ -356,4 +407,92 @@ move=> i _.
 by rewrite odd_double.
 Qed.
 
+(** #</div># *)
 
+(**
+#
+<script>
+alignWithTop = true;
+current = 0;
+slides = [];
+function select_current() {
+  for (var i = 0; i < slides.length; i++) {
+    var s = document.getElementById('slideno' + i);
+    if (i == current) {
+      s.setAttribute('class','slideno selected');
+    } else {
+      s.setAttribute('class','slideno');
+    }
+  }	
+}
+function init_slides() {
+  var toolbar = document.getElementById('panel-wrapper');
+  if (toolbar) {
+  var tools = document.createElement("div");
+  var tprev = document.createElement("div");
+  var tnext = document.createElement("div");
+  tools.setAttribute('id','tools');
+  tprev.setAttribute('id','prev');
+  tprev.setAttribute('onclick','prev_slide();');
+  tnext.setAttribute('id','next');
+  tnext.setAttribute('onclick','next_slide();');
+  toolbar.appendChild(tools);
+  tools.appendChild(tprev);
+  tools.appendChild(tnext);
+  
+  slides = document.getElementsByClassName('slide');
+  for (var i = 0; i < slides.length; i++) {
+    var s = document.createElement("div");
+    s.setAttribute('id','slideno' + i);
+    s.setAttribute('class','slideno');
+    s.setAttribute('onclick','goto_slide('+ i +');');
+    s.innerHTML = i;
+    tools.appendChild(s);
+  }
+  select_current();
+  } else {
+  //retry later
+  setTimeout(init_slides,100);	  
+  }
+}
+function on_screen(rect) {
+  return (
+    rect.top >= 0 &&
+    rect.top <= (window.innerHeight || document.documentElement.clientHeight)
+  );
+}
+function update_scrolled(){
+  for (var i = 0; i < slides.length; i++) {
+    var rect = slides[i].getBoundingClientRect();
+      if (on_screen(rect)) {
+        current = i;
+        select_current();	
+    }
+  }
+}
+function goto_slide(n) {
+  current = n;
+  var element = slides[current];
+  console.log(element);
+  element.scrollIntoView(alignWithTop);
+  select_current();
+}
+function next_slide() {
+  current++;
+  if (current >= slides.length) { current = slides.length - 1; }
+  var element = slides[current];
+  console.log(element);
+  element.scrollIntoView(alignWithTop);
+  select_current();
+}
+function prev_slide() {
+  current--;
+  if (current < 0) { current = 0; }
+  var element = slides[current];
+  element.scrollIntoView(alignWithTop);
+  select_current();
+}
+window.onload = init_slides;
+window.onscroll = update_scrolled;
+</script>
+# *)
