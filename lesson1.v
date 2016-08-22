@@ -324,6 +324,7 @@ End Exercises.
 <script>
 alignWithTop = true;
 current = 0;
+slides = [];
 function select_current() {
   for (var i = 0; i < slides.length; i++) {
     var s = document.getElementById('slideno' + i);
@@ -364,7 +365,21 @@ function init_slides() {
   setTimeout(init_slides,100);	  
   }
 }
-window.onload = init_slides;
+function on_screen(rect) {
+  return (
+    rect.top >= 0 &&
+    rect.top <= (window.innerHeight || document.documentElement.clientHeight)
+  );
+}
+function update_scrolled(){
+  for (var i = 0; i < slides.length; i++) {
+    var rect = slides[i].getBoundingClientRect();
+      if (on_screen(rect)) {
+        current = i;
+        select_current();	
+    }
+  }
+}
 function goto_slide(n) {
   current = n;
   var element = slides[current];
@@ -387,5 +402,7 @@ function prev_slide() {
   element.scrollIntoView(alignWithTop);
   select_current();
 }
+window.onload = init_slides;
+window.onscroll = update_scrolled;
 </script>
 # *)
