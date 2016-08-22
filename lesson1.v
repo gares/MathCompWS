@@ -90,6 +90,7 @@ Qed.
 
 End Leq.
 
+(** #</div># *)
 
 (** -------------------------------------------- *)
   
@@ -138,6 +139,8 @@ by case: b1; case: b2.
 Qed.
 
 End BoolLogic.
+
+(** #</div># *)
 
 (** -------------------------------------------- *)
 
@@ -200,6 +203,7 @@ Qed.
 
 End ExampleArith.
 
+(** #</div># *)
 (** -------------------------------------------- *)
 
 (** #<div class='slide'># 
@@ -243,6 +247,7 @@ Admitted.
 
 End PropLogic.
 
+(** #</div># *)
 (** -------------------------------------------- *)
 
 (** #<div class='slide'># 
@@ -274,6 +279,7 @@ Qed.
 
 End ViewIPatCase.
 
+(** #</div># *)
 (** -------------------------------------------- *)
 
 (** #<div class='slide'># 
@@ -308,6 +314,7 @@ Qed.
 
 End Primes.
 
+(** #</div># *)
 (** -------------------------------------------- *)
 
 (** #<div class='slide'>#
@@ -315,10 +322,26 @@ End Primes.
 
 Module Exercises.
 
+(* induction *)
+
+Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
+Proof.
+(*D*) elim: n => // n IHn.
+(*D*) rewrite expnS odd_mul {}IHn orbC.
+(*D*) by case: odd.
+Admitted.
+
+(* just rewriting is enough *)
+
+Lemma subn_sqr m n : m ^ 2 - n ^ 2 = (m - n) * (m + n).
+Proof. 
+(*D*) by rewrite mulnBl !mulnDr addnC [m * _]mulnC subnDl !mulnn.
+Admitted.
 
 
 End Exercises.
 
+(** #</div># *)
 (**
 #
 <script>
