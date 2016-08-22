@@ -123,11 +123,12 @@ Local Notation "a && b" := (andb a b).
 
 Lemma andbC b1 b2 : b1 && b2 = b2 && b1.
 Proof.
-by case: b1; case: b2.
-Qed.
+(*D*) by case: b1; case: b2.
+Admitted.
 
 Definition orb b1 b2 :=
-  if b1 then true else b2.
+(*D*) if b1 then true else b2
+.
 
 Local Notation "a || b" := (orb a b).
 
@@ -181,16 +182,16 @@ Lemma example m p : prime p ->
   p %| m `! + 1 -> ~~ (p <= m).
 Proof.
 move=> prime_p.
-Search "contra".
+(*Search "contra".*)
 apply: contraL.
 move=> leq_p_m.
-Search dvdn addn.
+(*Search dvdn addn.*)
 rewrite dvdn_addr.
-  Search eq (_ < _) (_ %| _).
+  (*Search eq (_ < _) (_ %| _).*)
   rewrite gtnNdvd.
     by [].
     by [].
-  Search leq prime.
+  (*Search leq prime.*)
   by apply: prime_gt1.
 apply: dvdn_fact.
 rewrite leq_p_m andbT.
@@ -235,9 +236,9 @@ Local Notation "'exists' x , p" := (ex (fun x => p)) (at level 200).
 
 Lemma andP (a b : bool) : reflect (a /\ b) (a && b).
 Proof.
-apply: (iffP idP); 
-  last by move=> [-> ->].
-case: a; case: b => //.
+apply: (iffP idP). 
+(*D*)  by case: a; case: b.
+(*D*)by move=> [pa pb]; rewrite pa pb.
 Admitted.
 
 End PropLogic.
@@ -248,14 +249,32 @@ End PropLogic.
 ** Views and intro patterns
   - Two ways to use a "reflect"
    
-#<div id='here'></div>#
+to say: move= /andP[] eqP ==
 
-to say:
- - move= /andP[]
- - eqP
- - ==
+<<
+Lemma ltnW m n : m < n -> m <= n.
+Lemma eqP m n : reflect (m = n) (m == n).
+Lemma ltngtP m n : compare_nat m n (m < n) (n < m) (m == n)
+>>
+#</div># *)
 
--------------------------------------------- *)
+Module ViewIPatCase.
+
+Lemma transitivity m n x :
+  m < x && x <= n -> m <= n.
+Proof.
+move=> /andP[/ltnW le_mx le_xn].
+by apply: leq_trans le_mx le_xn.
+Qed.
+
+Lemma tricotomy (m n : nat) : (m == n) || (m < n)|| (n < m). 
+Proof.
+by case: ltngtP.
+Qed.
+
+End ViewIPatCase.
+
+(** -------------------------------------------- *)
 
 (** #<div class='slide'># 
 ** Infinitude of primes 
@@ -291,15 +310,54 @@ End Primes.
 
 (** -------------------------------------------- *)
 
+(** #<div class='slide'>#
+** Exercises *)
+
+Module Exercises.
+
+
+
+End Exercises.
+
 (**
 #
+<div id='tools'>
 <div id='prev' onclick='prev_slide()'></div>
 <div id='next' onclick='next_slide()'></div>
+</div>
 <script>
 alignWithTop = true;
 current = 0;
+function select_current() {
+  for (var i = 0; i < slides.length; i++) {
+    var s = document.getElementById('slideno' + i);
+    if (i == current) {
+      s.setAttribute('class','slideno selected');
+    } else {
+      s.setAttribute('class','slideno');
+    }
+  }	
+}
 window.onload = function() {
   slides = document.getElementsByClassName('slide');
+  for (var i = 0; i < slides.length; i++) {
+    var s = document.createElement("div");
+    s.setAttribute('id','slideno' + i);
+    s.setAttribute('class','slideno');
+    s.setAttribute('style','top: ' + i * 30 + 'px');
+    s.setAttribute('onclick','goto_slide('+ i +');');
+    s.innerHTML = i;
+    var tools = document.getElementById('tools');
+    tools.appendChild(s);
+  }
+  select_current();
+}
+function goto_slide(n) {
+  current = n;
+  var element = slides[current];
+  console.log(element);
+  element.scrollIntoView(alignWithTop);
+  select_current();
 }
 function next_slide() {
   current++;
@@ -307,12 +365,14 @@ function next_slide() {
   var element = slides[current];
   console.log(element);
   element.scrollIntoView(alignWithTop);
+  select_current();
 }
 function prev_slide() {
   current--;
   if (current < 0) { current = 0; }
   var element = slides[current];
   element.scrollIntoView(alignWithTop);
+  select_current();
 }
 </script>
 # *)
