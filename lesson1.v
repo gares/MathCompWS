@@ -321,10 +321,6 @@ End Exercises.
 
 (**
 #
-<div id='tools'>
-<div id='prev' onclick='prev_slide()'></div>
-<div id='next' onclick='next_slide()'></div>
-</div>
 <script>
 alignWithTop = true;
 current = 0;
@@ -338,20 +334,37 @@ function select_current() {
     }
   }	
 }
-window.onload = function() {
+function init_slides() {
+  var toolbar = document.getElementById('panel-wrapper');
+  if (toolbar) {
+  var tools = document.createElement("div");
+  var tprev = document.createElement("div");
+  var tnext = document.createElement("div");
+  tools.setAttribute('id','tools');
+  tprev.setAttribute('id','prev');
+  tprev.setAttribute('onclick','prev_slide();');
+  tnext.setAttribute('id','next');
+  tnext.setAttribute('onclick','next_slide();');
+  toolbar.appendChild(tools);
+  tools.appendChild(tprev);
+  tools.appendChild(tnext);
+  
   slides = document.getElementsByClassName('slide');
   for (var i = 0; i < slides.length; i++) {
     var s = document.createElement("div");
     s.setAttribute('id','slideno' + i);
     s.setAttribute('class','slideno');
-    s.setAttribute('style','top: ' + i * 30 + 'px');
     s.setAttribute('onclick','goto_slide('+ i +');');
     s.innerHTML = i;
-    var tools = document.getElementById('tools');
     tools.appendChild(s);
   }
   select_current();
+  } else {
+  //retry later
+  setTimeout(init_slides,100);	  
+  }
 }
+window.onload = init_slides;
 function goto_slide(n) {
   current = n;
   var element = slides[current];

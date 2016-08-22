@@ -14,9 +14,9 @@ p {
 }
 
 #tools {
-  position: fixed;
-  right: 45.5%;
-  top: 40px;
+  position: absolute;
+  left: -30px;
+  top: 45px;
   width: 1.5em;
 }
 
@@ -35,6 +35,7 @@ p {
   border-width: 10px 10px 0 10px;
   border-color: rgba(117,117,117,0.5) transparent transparent transparent;
   margin-bottom: 3px;
+  z-index: 100;
 }
 .slideno {
   border-style: solid;
