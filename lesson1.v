@@ -12,9 +12,9 @@ From mathcomp Require Import all_ssreflect.
 (** #<div class='slide vfill'># 
 ** Spam
 
-#<a href="http://math-comp.github.io/math-comp/book">Mathematical Components (the book)</a>#
+#<a href="http://math-comp.github.io/mcb">Mathematical Components (the book)</a>#
 
-#<img src="http://math-comp.github.io/math-comp/book/cover-front-web.png"/>#
+#<img src="http://math-comp.github.io/mcb/cover-front-web.png"/>#
 
 #</div>#
 -------------------------------------------- *)
@@ -298,15 +298,16 @@ Proof.
 case: m => //= m.
 elim: n => //= n IHn.
 rewrite ltnS leq_eqVlt.
-move=> /orP xxx.
-case: xxx => [ /eqP-> | /IHn ].
+move=> /orP eq_or_lt.
+case: eq_or_lt => [ /eqP-> | /IHn ].
   by apply: dvdn_mulr.
 by apply: dvdn_mull.
 Qed.
 
 Lemma prime_above m : exists2 p, prime p & m < p.
 Proof.
-have /pdivP[p pr_p p_dv_m1]: 1 < m`! + 1 by rewrite addn1 ltnS fact_gt0.
+have /pdivP[p pr_p p_dv_m1]: 1 < m`! + 1.
+  by rewrite addn1 ltnS fact_gt0.
 exists p => //. rewrite /= ltnNge.
 apply: contraL p_dv_m1 => p_le_m.
 by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
