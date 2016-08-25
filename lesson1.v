@@ -341,19 +341,40 @@ Module Exercises.
 
 Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
 Proof.
-(*D*) elim: n => // n IHn.
-(*D*) rewrite expnS odd_mul {}IHn orbC.
-(*D*) by case: odd.
+(* fill in *)
 Admitted.
 
+(** 
+#
+<button onclick="hide('sol1')">Solution</button>
+<div id='sol1' class='solution'>
+<pre>
+elim: n => // n IHn.
+rewrite expnS odd_mul IHn orbC.
+move=> {IHn}.
+by case: (odd m).
+</pre>
+</div>
+#
+*)
 
 (* Here rewriting is enough *)
 
 Lemma subn_sqr m n : m ^ 2 - n ^ 2 = (m - n) * (m + n).
 Proof. 
-(*D*) by rewrite mulnBl !mulnDr addnC [m * _]mulnC subnDl !mulnn.
+(* fill in *)
 Admitted.
 
+(** 
+#
+<button onclick="hide('sol2')">Solution</button>
+<div id='sol2' class='solution'>
+<pre>
+by rewrite mulnBl !mulnDr addnC (mulnC m) subnDl !mulnn.
+</pre>
+</div>
+#
+*)
 
 End Exercises.
 
@@ -440,6 +461,14 @@ function prev_slide() {
   var element = slides[current];
   element.scrollIntoView(alignWithTop);
   select_current();
+}
+function hide (element_id) {
+  element = document.getElementById(element_id);
+    if (element.style.display != 'block') {
+      element.style.display = 'block';
+    } else {
+      element.style.display = 'none';
+    }
 }
 window.onload = init_slides;
 window.onscroll = update_scrolled;
