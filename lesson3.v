@@ -241,6 +241,7 @@ Check \sum_(i : T) f i.
 Check big_ord_recr.
 Check big_ord_recl.
 Check bigD1.
+Check big_setID.
 (** #</div># *)
 
 (** --------------------------------------------
