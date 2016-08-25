@@ -12,9 +12,11 @@ From mathcomp Require Import all_ssreflect.
 (** #<div class='slide vfill'># 
 ** Spam
 
-#<a href="http://math-comp.github.io/mcb">Mathematical Components (the book)</a>#
+#<a target='_blank' href="http://math-comp.github.io/mcb">Mathematical Components (the book)</a>#
 
 #<img src="http://math-comp.github.io/mcb/cover-front-web.png"/>#
+
+#<a target='_blank' href="http://math-comp.github.io/mcb">http://math-comp.github.io/mcb</a>#
 
 #</div>#
 -------------------------------------------- *)
@@ -101,7 +103,7 @@ End Leq.
  - Here symbolic computation means progress
  - In bool EM holds 
 
-#<a class='file' href='http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.ssrbool.html'>ssrbool</a>#
+#<a target='_blank' class='file' href='http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.ssrbool.html'>ssrbool</a>#
 *)
 
 Module BoolLogic.
@@ -164,9 +166,9 @@ that is not possible since p is prime, hence greater than 1.
 (** #<div class='slide'># 
 ** Some arithmetic
 
-#<a class='file' href='http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.ssrnat.html'>ssrnat</a>#
-#<a class='file' href='http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.prime.html'>prime</a>#
-#<a class='file' href='http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.div.html'>div</a>#
+#<a target='_blank' class='file' href='http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.ssrnat.html'>ssrnat</a>#
+#<a target='_blank' class='file' href='http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.prime.html'>prime</a>#
+#<a target='_blank' class='file' href='http://math-comp.github.io/math-comp/htmldoc/mathcomp.ssreflect.div.html'>div</a>#
 
 to say: move, rewrite //, Search, [.. <= .. <= ..]
 
@@ -306,9 +308,12 @@ Qed.
 
 Lemma prime_above m : exists2 p, prime p & m < p.
 Proof.
-have /pdivP[p pr_p p_dv_m1]: 1 < m`! + 1.
+have: 1 < m`! + 1.
   by rewrite addn1 ltnS fact_gt0.
-exists p => //. rewrite /= ltnNge.
+move=> /pdivP[p pr_p p_dv_m1].
+exists p => //. 
+rewrite /= ltnNge.
+
 apply: contraL p_dv_m1 => p_le_m.
 by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
 Qed.
@@ -319,11 +324,19 @@ End Primes.
 (** -------------------------------------------- *)
 
 (** #<div class='slide'>#
-** Exercises *)
+** Exercises 
+
+  - Hint1: Search can be limited to the ssrnat module as in 
+	  [Search _ something in ssrnat.]
+
+  - Hint2: removing an hypothesis name [Hyp] from the context
+           can be done with [move=> {Hyp}].
+
+*)
 
 Module Exercises.
 
-(* induction *)
+(* Here you really need induction *)
 
 Lemma odd_exp m n : odd (m ^ n) = (n == 0) || odd m.
 Proof.
@@ -332,7 +345,7 @@ Proof.
 (*D*) by case: odd.
 Admitted.
 
-(* just rewriting is enough *)
+(* Here rewriting is enough *)
 
 Lemma subn_sqr m n : m ^ 2 - n ^ 2 = (m - n) * (m + n).
 Proof. 
