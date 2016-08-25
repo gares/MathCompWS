@@ -326,10 +326,11 @@ End Primes.
 (** #<div class='slide'>#
 ** Exercises 
 
-  - Hint1: Search can be limited to the ssrnat module as in 
-	  [Search _ something in ssrnat.]
+  - Hint1: Search results can be limited to the ssrnat module as in 
+	  [Search _ something in ssrnat.]  All the lemmas you
+	  are looking for live in there. 
 
-  - Hint2: removing an hypothesis name [Hyp] from the context
+  - Hint2: removing an hypothesis named [Hyp] from the context
            can be done with [move=> {Hyp}].
 
 *)
@@ -344,6 +345,7 @@ Proof.
 (*D*) rewrite expnS odd_mul {}IHn orbC.
 (*D*) by case: odd.
 Admitted.
+
 
 (* Here rewriting is enough *)
 
