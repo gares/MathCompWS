@@ -396,7 +396,7 @@ function on_screen(rect) {
   );
 }
 function update_scrolled(){
-  for (var i = 0; i < slides.length; i++) {
+  for (var i = slides.length-1; i >= 0; i--) {
     var rect = slides[i].getBoundingClientRect();
       if (on_screen(rect)) {
         current = i;
