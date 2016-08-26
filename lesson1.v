@@ -174,7 +174,6 @@ to say: move, rewrite //, Search, [.. <= .. <= ..]
 
 <<
 Lemma contraL c b : (c -> ~~ b) -> b -> ~~ c.
-Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
 Lemma gtnNdvd n d : 0 < n -> n < d -> (d %| n) = false.
 Lemma dvdn_addr m d n : d %| m -> (d %| m + n) = (d %| n).
 Lemma dvdn_fact m n : 0 < m <= n -> m %| n`!.
