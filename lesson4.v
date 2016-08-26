@@ -10,9 +10,9 @@ Local Open Scope ring_scope.
 (** #<div class='slide vfill'>#
 * The Matrix library
 
-This library relies a lot on the #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.ssralg.html">algebraic hierarchy</a>#
+This library relies a lot on the #<a target='_blank' class='file' href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.ssralg.html">algebraic hierarchy</a>#
 
-Extensive documentation in the header of the library #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.matrix.html">matrix</a>#
+Extensive documentation in the header of the library #<a target='_blank' class='file' href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.matrix.html">matrix</a>#
 
 
 *)
@@ -22,6 +22,7 @@ Extensive documentation in the header of the library #<a href="http://math-comp.
 * Roadmap for the lesson:
  - General facts about matrices:
    - definition of matrices
+   - main theorems to handle matrices (reduction and comparison)
    - generic (ring) notions
    - specific matrix notions
  - "Toy" application to graph theory:
@@ -30,8 +31,8 @@ Extensive documentation in the header of the library #<a href="http://math-comp.
    - polynomial adjacency matrices (ref from litterature missing...)
 
 * Out of the scope of this lesson:
- - #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.mxalgebra.html">linear algebra library using only matrices (mxalgebra)</a>#
- - #<a href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.vector.html">vector space library (vector)</a># (one has to decide with care whether to use vector or mxalgebra)
+ - #<a target='_blank' class='file' href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.mxalgebra.html">linear algebra library using only matrices (mxalgebra)</a>#
+ - #<a target='_blank' class='file' href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.vector.html">vector space library (vector)</a># (one has to decide with care whether to use vector or mxalgebra)
  - characters, representation, galois theory,...
 
 #</div>#
@@ -44,17 +45,21 @@ Module DefinitionMatrices.
 (Credits "ITP 2013 tutorial: The Mathematical Components library" by Enrico Tassi and Assia Mahboubi #<a href="http://ssr.msr-inria.inria.fr/doc/tutorial-itp13/">material here</a>#)
 
 *)
-Reserved Notation "''M[' R ]_ n"    (at level 8, n at level 2, format "''M[' R ]_ n").
-Reserved Notation "''M[' R ]_ ( m , n )" (at level 8, format "''M[' R ]_ ( m ,  n )").
+Reserved Notation "''M[' R ]_ n"
+  (at level 8, n at level 2, format "''M[' R ]_ n").
+Reserved Notation "''M[' R ]_ ( m , n )"
+  (at level 8, format "''M[' R ]_ ( m ,  n )").
 
 Reserved Notation "\matrix_ ( i , j ) E"
   (at level 36, E at level 36, i, j at level 50,
    format "\matrix_ ( i ,  j )  E").
 
 Reserved Notation "x %:M"   (at level 8, format "x %:M").
-Reserved Notation "A *m B" (at level 40, left associativity, format "A  *m  B").
+Reserved Notation "A *m B"
+  (at level 40, left associativity, format "A  *m  B").
 Reserved Notation "A ^T"    (at level 8, format "A ^T").
-Reserved Notation "\tr A"   (at level 10, A at level 8, format "\tr  A").
+Reserved Notation "\tr A"
+  (at level 10, A at level 8, format "\tr  A").
 
 (** #</div># *)
 (** -------------------------------------------- *)
@@ -66,9 +71,7 @@ Inductive matrix (R : Type) (m n : nat) : Type :=
   Matrix of {ffun 'I_m * 'I_n -> R}.
 (**
 
-Some notations : size inside parentheses, type of coefficients inside
-square brackets. NB: In the library, the type of coefficients can also
-be ommitted.
+Some notations : size inside parentheses, type of coefficients inside square brackets. NB: In the library, the type of coefficients can also be ommitted.
 
 *)
 Notation "''M[' R ]_ ( m , n )" := (matrix R m n) : type_scope.
@@ -81,11 +84,10 @@ Check 'M[nat]_2.
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
-"matrix" is just a tag over ffun: it inherits from its structure We
-can "transfer" automatically all structures from the type of finite
-functions by "trivial subTyping".
+"matrix" is just a tag over ffun: it inherits from its structure. We can "transfer" automatically all structures from the type of finite functions by "trivial subTyping".
 *)
-Definition mx_val R m n (A : 'M[R]_(m,n)) : {ffun 'I_m * 'I_n -> R} :=
+Definition mx_val R m n (A : 'M[R]_(m,n)) :
+  {ffun 'I_m * 'I_n -> R} :=
   let: Matrix g := A in g.
 
 Canonical matrix_subType R m n :=
@@ -98,7 +100,8 @@ Canonical matrix_eqType (R : eqType) m n:=
 Definition matrix_choiceMixin (R : choiceType) m n :=
   [choiceMixin of 'M[R]_(m, n) by <:].
 Canonical matrix_choiceType (R : choiceType) m n :=
-  Eval hnf in ChoiceType 'M[R]_(m, n) (matrix_choiceMixin R m n).
+  Eval hnf in ChoiceType 'M[R]_(m, n)
+                         (matrix_choiceMixin R m n).
 Definition matrix_countMixin (R : countType) m n :=
   [countMixin of 'M[R]_(m, n) by <:].
 Canonical matrix_countType (R : countType) m n :=
@@ -120,33 +123,33 @@ Check [eqType of 'M[nat]_2].
 Check forall A : 'M[nat]_2, A == A.
 (**
 
-Since matrices over nat are comparable with _ == _, matrices over
-matrices over nat are also comparable.
+Since matrices over nat are comparable with _ == _, matrices over matrices over nat are also comparable.
 
 *)
 Check forall AA : 'M[ 'M[nat]_3 ]_2, AA == AA.
 (**
 
-We define a coercion in order to access elements as if matrices were
-functions.
+We define a coercion in order to access elements as if matrices were functions.
 
 *)
-Definition fun_of_mx R m n (A : 'M[R]_(m,n)) : 'I_m -> 'I_n -> R :=
-fun i j => mx_val A (i, j).  Coercion fun_of_mx : matrix >-> Funclass.
+Definition fun_of_mx R m n (A : 'M[R]_(m,n)) :
+  'I_m -> 'I_n -> R :=
+  fun i j => mx_val A (i, j).
+Coercion fun_of_mx : matrix >-> Funclass.
 
 Check forall (A : 'M[nat]_3) i j, A i j == 37.
 (** #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 
-We provide a notation to build matrices from a general term. This is
-the best way to define a matrix. One can also assemble blocks using
-row_mx, col_mx and block_mx, but most of the time, this is a bad idea.
+We provide a notation to build matrices from a general term. This is the best way to define a matrix. One can also assemble blocks using row_mx, col_mx and block_mx, but most of the time, this might be a bad idea.
 
 *)
-Definition mx_of_fun R m n (F : 'I_m -> 'I_n -> R) : 'M[R]_(m,n) :=
+Definition mx_of_fun R m n
+  (F : 'I_m -> 'I_n -> R) : 'M[R]_(m,n) :=
   Matrix [ffun ij => F ij.1 ij.2].
-Notation "\matrix_ ( i , j ) E" := (mx_of_fun (fun i j => E))
+Notation "\matrix_ ( i , j ) E" :=
+  (mx_of_fun (fun i j => E))
   (at level 36, E at level 36, i, j at level 50) : ring_scope.
 
 Check \matrix_(i,j) (i - j)%N  :  'M[nat]_(3,4).
@@ -162,36 +165,27 @@ Module MatrixProperties.
 
 We now show the most used theorems for matrix manipulation.
 
-** mxE
+*** mxE
 
-mxE is an equation to compute a term in the matrix at given
-coordinates: it extracts the general term of the matrix and compute
-the substitution of indexes. It is generally the right move when you
-have <pre>(A complicated matrix) i j</pre> in your goal.
+mxE is an equation to compute a term in the matrix at given coordinates: it extracts the general term of the matrix and compute the substitution of indexes. It is generally the right move when you have <pre>(A complicated matrix) i j</pre> in your goal.
 
 *)
 Check mxE.
-(** #</div># *)
-(** -------------------------------------------- *)
-(** #<div class='slide'>#
-** matrixP
+(**
+*** matrixP
 
-matrixP is the "extensionality theorem" for matrices, it says two
-matrices are equal if and only if all their coefficients are pairwise
-equal.
+matrixP is the "extensionality theorem" for matrices, it says two matrices are equal if and only if all their coefficients are pairwise equal.
 
 *)
 Check matrixP.
-(**
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
+** Ring operations on matrices
 
-** operations on matrices
+*** Matrices on rings are provided with a R-module canonical structure.
 
-*** matrices on rings are provided with a R-module canonical
-    structure.
-
-Mathematical components includes a library for many standard algebaric
-structures. This library provides generic operations (0, 1, +, *, ...)
-and theorems depending on how rich the structure is.
+Mathematical components includes a library for many standard algebaric structures. This library provides generic operations (0, 1, +, *, ...) and theorems depending on how rich the structure is.
 
 *)
 Lemma test (R : ringType) m n (A B : 'M[R]_(m,n)) : A + B = B + A.
@@ -201,22 +195,19 @@ However, the library does not contain heterogeneous multiplication, so we have a
 *)
 Print mulmx.
 
-Fail Lemma test (R : ringType) m n (A B : 'M[R]_(m, n)) : A * B = 0.
+Fail Lemma test (R : ringType) m n (A B : 'M[R]_(m, n)) :
+  A * B = 0.
 
 Lemma test (R : ringType) m n p
-  (A : 'M[R]_(m, n)) (B C : 'M[R]_(n, p)) : A *m (B + C) = (A *m B) + (A *m C).
+  (A : 'M[R]_(m, n)) (B C : 'M[R]_(n, p)) :
+  A *m (B + C) = (A *m B) + (A *m C).
 Proof. rewrite mulmxDr. Abort.
-
 (** #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 *** square matrices with non zero size have a ring canonical structure.
-*)
-(**
 
-The generic ring product is available on square matrices with explicit
-nonzero size (ie size is convertible to n.+1). This ring product
-coincides with the matrix product (definitionally).
+The generic ring product is available on square matrices with explicit nonzero size (ie size is convertible to n.+1). This ring product coincides with the matrix product (definitionally).
 
 *)
 Lemma test (R : ringType) n (A B : 'M[R]_n.+1) : A * B = B * A.
@@ -224,18 +215,17 @@ Proof. Fail rewrite mulrC. Abort.
 (**
 
 
-*** specific operation
+** Specific matrix operations
 
-There are scalar_mx, trace, transpose and determinant operations, that
-are specific to matrices.
-
+There are scalar_mx, trace, transpose and determinant operations, that are specific to matrices.
 
 Builds a diagonal matrix from any element
 *)
 Print scalar_mx.
 Locate "%:M".
 
-Lemma test (R : ringType) m n (a : R) (A : 'M[R]_(m,n)) : a *: A = a%:M *m A.
+Lemma test (R : ringType) m n (a : R) (A : 'M[R]_(m,n)) :
+  a *: A = a%:M *m A.
 Proof. by rewrite mul_scalar_mx. Abort.
 
 Print mxtrace.
@@ -250,11 +240,13 @@ Locate "\det".
 End MatrixProperties.
 (** #</div># *)
 (** -------------------------------------------- *)
-(** #<div class='slide'># * "Toy" application to graph theory:
+(** #<div class='slide'>#
 
-We now illustrate the use of matrices on simple example of graph.  For
-simplicity, we take graphs on ordinal (type representing initial
-segments of natural numbers : [0, .., i-1])
+* Toy application to graph theory:
+
+We now illustrate the use of matrices on simple example of graph.  For simplicity, we take graphs on ordinal (type representing initial segments of natural numbers : [0, .., i-1])
+
+In order to compare elements from a field with total order, we use the structure real field type from the library #<a target='_blank' class='file' href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.ssrnum.html">numeric hierarchy</a>#. In practice this can be instanciated to rational numbers.
 
 *)
 Section mxgraph.
@@ -272,67 +264,85 @@ Definition adjacency (g : rel T) : 'M[R]_n :=
 Definition adjrel A : rel T := fun x y => A x y > 0.
 
 Lemma adjacencyK g : adjrel (adjacency g) =2 g.
-Proof. by move=> x y; rewrite /adjrel !mxE; case: g; rewrite // ltr01. Qed.
-(**
+Proof.
+by move=> x y; rewrite /adjrel !mxE; case: g; rewrite ?ltr01.
+Qed.
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
+
 Transposing the adjacency matrix reverses the graph
 *)
-Lemma tr_adjacencyK (g : rel T) : adjrel (adjacency g)^T =2 (fun x y => g y x).
+Lemma tr_adjacencyK (g : rel T) :
+  adjrel (adjacency g)^T =2 (fun x y => g y x).
 Proof. Admitted.
 (**
 #<button onclick="hide('sol_tr_adjacencyK')">Solution</button>
 <div id='sol_tr_adjacencyK' class='solution'>
 <pre>
-by move=> x y; rewrite /adjrel !mxE; case: g; rewrite // ltr01.
+by move=> x y; rewrite /adjrel !mxE; case: g; rewrite ?ltr01.
 </pre>
 </div>
 #
 *)
 (** #</div># *)
 (** -------------------------------------------- *)
-(** #<div class='slide'># ** Graph paths
+(** #<div class='slide'>#
+** Graph paths
 
 We define the set of paths in g from x to y of size k by comprehension, as the set of lists of size k, that end with y. Hence a path of size k goes through k+1 points, and in particular a path of size 0 starts and ends at the same point.
 
 We start by posing a notation on the set of graphs.
 *)
-Notation "k .-path g x y" := [set p : k.-tuple _ | path g x p & last x p == y]
-  (at level 2, g, x, y at next level, format "k .-path  g  x  y") : type_scope.
+Notation "k .-path g x y" :=
+  [set p : k.-tuple _ | path g x p & last x p == y]
+  (at level 2, g, x, y at next level,
+   format "k .-path  g  x  y") : type_scope.
 (**
-We can exhibit what are paths of size 0 and prove how many there are
+We can exhibit what are paths of size 0 and prove how many there are.
 *)
-Lemma g0path g x y : 0.-path g x y = if x == y then [set [tuple]] else set0.
+Lemma g0path g x y :
+  0.-path g x y = if x == y then [set [tuple]] else set0.
 Proof.
 by apply/setP => p; rewrite !inE tuple0 /= !fun_if !inE eqxx; case: eqP.
 Qed.
 
-Lemma card_g0path g x y : #|0.-path g x y : {set 0.-tuple T}| = (x == y).
+Lemma card_g0path g x y :
+  #|0.-path g x y : {set 0.-tuple T}| = (x == y).
 Proof. by rewrite g0path; case: eqP; rewrite ?cards1 ?cards0. Qed.
 (**
-We can exhibit what are paths of size 1 and prove how many there are
+We can exhibit what are paths of size 1 and prove how many there are.
 *)
-Lemma g1path g x y : 1.-path g x y = if g x y then [set [tuple y]]
-                                     else set0 : {set 1.-tuple T}.
-Proof.
-apply/setP => p; rewrite !inE; case: (tupleP p) => z q; rewrite tuple0 /=.
+Lemma g1path g x y :
+  1.-path g x y = if g x y then [set [tuple y]]
+                  else set0 : {set 1.-tuple T}.
+Proof. Admitted.
+(**
+The cardinality proof is left as an exercise in finite types and finite sets, but contains nothing about matrices. You may as well skip it if you want to focus on matrices.
+#
+<button onclick="hide('sol_card_gSpath')">Solution</button>
+<div id='sol_card_gSpath' class='solution'>
+<pre>
+apply/setP => p; rewrite !inE; case: (tupleP p) => z q; rewrite tuple0.
 rewrite (fun_if (fun s : {set _} => _ \in s)) !inE /=.
 rewrite -[_ == _ :> _.-tuple _]val_eqE eqseq_cons eqxx andbT.
 by have [->|neq_zy] := altP eqP; [case: g| rewrite andbF if_same].
-Qed.
-
+</pre>
+</div>
+#
+*)
 Lemma card_g1path g x y : #|1.-path g x y| = (g x y).
-Proof. by rewrite g1path; case: g; rewrite ?cards1 ?cards0. Qed.
+Proof.
+by rewrite g1path; case: g; rewrite ?cards1 ?cards0.
+Qed.
 (**
 
-We can exhibit what are paths of size n+1 and prove how many there
-are.
+We can exhibit what are paths of size n+1 and prove how many there are.
 
-The cardinality proof is left as an exercise in finite types and
-finite sets, but contains nothing about matrices. You may as well skip
-it if you want to focus on matrices.
 *)
-Lemma gSpath k g x y :
-  k.+1.-path g x y = [set p : k.+1.-tuple T | g x (thead p)
-                     & ([tuple of behead p] \in k.-path g (thead p) y)].
+Lemma gSpath k g x y : k.+1.-path g x y =
+  [set p : k.+1.-tuple T | g x (thead p)
+  & ([tuple of behead p] \in k.-path g (thead p) y)].
 Proof.
 by apply/setP => p; rewrite !inE; case: (tupleP p) => ??; rewrite theadE andbA.
 Qed.
@@ -341,22 +351,25 @@ Lemma card_gSpath k g x y :
   #|k.+1.-path g x y| = (\sum_z g x z * #|k.-path g z y|)%N.
 Proof. Admitted.
 (**
+The cardinality proof is left as an exercise in finite types and finite sets, but contains nothing about matrices. You may as well skip it if you want to focus on matrices.
 #
 <button onclick="hide('sol_card_gSpath')">Solution</button>
 <div id='sol_card_gSpath' class='solution'>
 <pre>
 rewrite (eq_bigr (fun z : T => \sum_(p : k.-tuple T)
-  if [&& g x z, path g z p & last z p == y] then 1 else 0)%N); last first.
+  if [&& g x z, path g z p & last z p == y] then 1 else 0)%N);
+  last first.
   move=> z _; rewrite -sum1dep_card big_distrr /= big_mkcond.
   by apply: eq_bigr=> p _; case: path; case: eqP; case: g.
 rewrite pair_big_dep /= -big_mkcond sum1dep_card.
-rewrite -(@card_imset _ _ (fun p : T * k.-tuple T => [tuple of p.1 :: p.2]));
+rewrite -(@card_imset _ _
+   (fun p : T * k.-tuple T => [tuple of p.1 :: p.2]));
    last by move=> [a p] [b q] /= [->/val_inj->].
 rewrite gSpath; apply: eq_card=> p; rewrite !inE /=.
 apply/idP/imsetP=> [|[[q z /=]]]; last by rewrite inE /= => ? ->.
 exists (thead p, [tuple of behead p]); rewrite ?inE //=.
 by case: (tupleP p) => //= ??; apply/val_inj.
-</proof>
+</pre>
 </div>
 #
 *)
@@ -368,7 +381,8 @@ by case: (tupleP p) => //= ??; apply/val_inj.
 We show the correspondance between the kth power of the adjacency matrix and the number of paths of size k.
 
 *)
-Lemma gpath_count k g x y : (adjacency g ^+ k) x y = #|k.-path g x y|%:R.
+Lemma gpath_count k g x y :
+  (adjacency g ^+ k) x y = #|k.-path g x y|%:R.
 Proof. Admitted.
 (**
 #<button onclick="hide('sol_gpath_count')">Solution</button>
@@ -382,20 +396,23 @@ by rewrite natrM IHk mxE.
 #
 *)
 Lemma gpath_exists k g x y :
-  reflect (exists p, p \in k.-path g x y) (((adjacency g ^+ k) x y) > 0).
+  reflect (exists p, p \in k.-path g x y)
+          (((adjacency g ^+ k) x y) > 0).
 Proof.
 rewrite gpath_count ltr0n card_gt0.
 by apply: (iffP (set0Pn _)) => -[p]; exists p.
 Qed.
 (** #</div># *)
 (** -------------------------------------------- *)
-(** #<div class='slide'># ** Definition of stochastic matrices
+(** #<div class='slide'>#
+** Definition of stochastic matrices
 
 First, we define the boolean definition, then the reflection lemma (which might be automated using Enrico and Benjamin's work on automated views.
 
 Then we can start proving intersting properties, like the product of two stochastic matrices is stochastic.
 *)
-Definition stochastic m p (M : 'M[R]_(m,p)) := [forall i, \sum_j M i j == 1].
+Definition stochastic m p (M : 'M[R]_(m,p)) :=
+  [forall i, \sum_j M i j == 1].
 
 Lemma stochasticP {m} {p} {M : 'M[R]_(m,p)} :
    reflect (forall i, \sum_j M i j = 1) (stochastic M).
@@ -418,20 +435,23 @@ by move=> l _; rewrite -mulr_sumr (stochasticP _) ?mulr1.
 *)
 (** #</div># *)
 (** -------------------------------------------- *)
-(** #<div class='slide'># ** Page rank
+(** #<div class='slide'>#
+** Page rank
 
-We define the page rank matrix and show it is stochastic
+We define the page rank matrix and show it is stochastic.
 
 *)
 Definition page_rank (g : rel T) : 'M[R]_n :=
   \matrix_(i < n, j < n) ((g i j)%:R / \sum_k (g i k)%:R).
 
 Lemma page_rank_gt0 g i j : page_rank g i j >= 0.
-Proof. by rewrite !mxE divr_ge0 ?ler0n ?sumr_ge0 // => k; rewrite ?ler0n. Qed.
+Proof.
+by rewrite !mxE divr_ge0 ?ler0n ?sumr_ge0 // => k; rewrite ?ler0n.
+Qed.
 
 Lemma page_rank_stochastic (g : rel T) :
   (forall i, exists j, g i j) -> stochastic (page_rank g).
-Proof.
+Proof. Admitted.
 (**
 #<button onclick="hide('sol_page_rank_stochastic')">Solution</button>
 <div id='sol_page_rank_stochastic' class='solution'>
@@ -448,23 +468,21 @@ Qed.
 *)
 (** #</div># *)
 (** -------------------------------------------- *)
-(** #<div class='slide'># ** Polynomial adjacency matrix
+(** #<div class='slide'>#
+** Polynomial adjacency matrix
 
-We define the polynomial adjacency matrix of a graph with no edges
-from vertices to themselves, as the matrix with 1 on the diagonal,
-polynomial X when there is an edge, and 0 if there is no connexion
-(between two different vertices).
+We define the polynomial adjacency matrix of a graph with no edges from vertices to themselves, as the matrix with 1 on the diagonal, polynomial X when there is an edge, and 0 if there is no connexion (between two different vertices).
 
-First we show it is a generalisation of the adjacency matrix, as
-taking the degree of each polynomial in the matrix results in the
-previously define adjacency matrix.
+First we show it is a generalisation of the adjacency matrix, as taking the degree of each polynomial in the matrix results in the previously define adjacency matrix.
 
 *)
 Definition padj g : 'M[{poly R}]_n :=
-  \matrix_(i, j) if i == j then 1 else if g i j then 'X else 0.
+  \matrix_(i, j) if i == j then 1
+                 else if g i j then 'X else 0.
 
 Lemma deg_padj g : (forall x, ~~ g x x) ->
-  map_mx (fun p : {poly R} => (size p).-1%:R) (padj g) = adjacency g.
+  map_mx (fun p : {poly R} => (size p).-1%:R) (padj g) =
+  adjacency g.
 Proof.
 move=> gNrefl; apply/matrixP=> i j; rewrite !mxE.
 case: eqP=> [->|_] //=.
@@ -473,20 +491,20 @@ by case: g {gNrefl}; rewrite ?size_polyC ?size_polyX ?eqxx.
 Qed.
 (** #</div># *)
 (** -------------------------------------------- *)
-(** #<div class='slide'># ** Polynomial adjacency matrix
+(** #<div class='slide'>#
+** Polynomial adjacency matrix
 
-Then one can prove that there is a link beween the number of path of
-size i, and the ith coefficient of the polynomial in the corresponding
-coefficient of the matrix.
+Then one can prove that there is a link beween the number of path of size i, and the ith coefficient of the polynomial in the corresponding coefficient of the matrix.
 
-I was not aware of this result, does anyone know where one could find
-it in the litterature?
+I was not aware of this result, does anyone know where one could find it in the litterature?
 
-Warning: my own proof of this fact is currently 31 lines..
+Warning: my own proof of this fact is currently 31 lines...
 
 *)
-Lemma coef_padjX k i (g : rel T) x y : (forall x, ~~ g x x) ->
-  ((padj g ^+ k) x y)`_i = (#|i.-path g x y| * 'C(k, i))%:R.
+Lemma coef_padjX k i (g : rel T) x y :
+  (forall x, ~~ g x x) ->
+  ((padj g ^+ k) x y)`_i =
+  (#|i.-path g x y| * 'C(k, i))%:R.
 Proof. Admitted.
 (**
 #
@@ -524,13 +542,11 @@ evar (F : 'I_n -> R); rewrite (eq_bigr F)=> [|z _]; last first.
 rewrite big_split /= (bigD1 x) // big1 /= ?addr0 ?eqxx ?mul1n; last first.
   by move=> z; rewrite eq_sym => /negPf->; rewrite ?mul0r.
 by rewrite -natr_sum -!big_distrl /= -card_gSpath /= -natrD binS mulnDr.
-</proof>
+</pre>
 </div>
 #
 *)
-(** #</div># *)
-End mxgraph.
-(**
+(** #</div># *) End mxgraph. (**
 #
 <script>
 alignWithTop = true;
