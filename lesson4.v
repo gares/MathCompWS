@@ -7,37 +7,39 @@ Obligation Tactic := idtac.
 
 Import GRing.Theory Num.Theory.
 Local Open Scope ring_scope.
-(** #<div class='slide vfill'>#
+(** #<div class='slide'>#
 * The Matrix library
 
 This library relies a lot on the #<a target='_blank' class='file' href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.ssralg.html">algebraic hierarchy</a>#
 
 Extensive documentation in the header of the library #<a target='_blank' class='file' href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.matrix.html">matrix</a>#
 
-
 *)
 (** -------------------------------------------- *)
 (**
-
 * Roadmap for the lesson:
  - General facts about matrices:
    - definition of matrices
    - main theorems to handle matrices (reduction and comparison)
    - generic (ring) notions
    - specific matrix notions
+ - Doing a proper search using naming conventions
  - "Toy" application to graph theory:
    - adjacency matrix of a graph
    - stochastic matrices and page rank matrix
    - polynomial adjacency matrices (ref from litterature missing...)
 
-* Out of the scope of this lesson:
+*)
+(** -------------------------------------------- *)
+(**
+
+* Out of the scope of this lesson
  - #<a target='_blank' class='file' href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.mxalgebra.html">linear algebra library using only matrices (mxalgebra)</a>#
  - #<a target='_blank' class='file' href="http://math-comp.github.io/math-comp/htmldoc/mathcomp.algebra.vector.html">vector space library (vector)</a># (one has to decide with care whether to use vector or mxalgebra)
  - characters, representation, galois theory,...
 
-#</div>#
 *)
-Module DefinitionMatrices.
+(** -------------------------------------------- *)
 (** #<div class='slide'>#
 * General facts about matrices
 ** Defining Matrices
@@ -45,6 +47,7 @@ Module DefinitionMatrices.
 (Credits "ITP 2013 tutorial: The Mathematical Components library" by Enrico Tassi and Assia Mahboubi #<a href="http://ssr.msr-inria.inria.fr/doc/tutorial-itp13/">material here</a>#)
 
 *)
+Module DefinitionMatrices.
 Reserved Notation "''M[' R ]_ n"
   (at level 8, n at level 2, format "''M[' R ]_ n").
 Reserved Notation "''M[' R ]_ ( m , n )"
@@ -241,8 +244,105 @@ End MatrixProperties.
 (** #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
+* Naming conventions.
 
-* Toy application to graph theory:
+The two most important things to get your way out of a situation:
+ - Knowing your math
+ - Searching the library for what you think you know
+
+For that you have the ssreflect Search command. To use its full power, one should combine seach by identifier (Coq definition), pattern (partial terms) and name (a string contained in the name of the theorem).
+
+The two first methods are straightforward to use (except if you instanciate your patterns more than necessary), but searching by name requires to be aware of naming conventions.
+
+*)
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
+** Names in the library are usually obeying one of following the convention
+
+ - #<pre>(condition_)?mainSymbol_suffixes</pre>#
+ - #<pre>mainSymbol_suffixes(_condition)?</pre>#
+
+Or in the presence of a property denoted by a nary or unary predicate:
+ - #<pre>naryPredicate_mainSymbol+</pre>#
+ - #<pre>mainSymbol_unaryPredicate</pre>#
+
+** Where :
+
+ - "mainSymbol" is the most meaningful part of the lemma. It generally
+   is the head symbol of the right-hand side of an equation or the
+   head symbol of a theorem. It can also simply be the main object of
+   study, head symbol or not. It is usually either
+
+  - one of the main symbols of the theory at hand. For example, for
+    ssralg, it will be "opp", "add", "mul", etc...
+
+  - or a special "canonical" operation, such as a ring morphism or a
+    subtype predicate. e.g. "linear", "raddf", "rmorph", "rpred", etc ...
+
+ - "condition" is used when the lemma applies under some hypothesis. As in
+
+ - "suffixes" are there to refine what shape and/or what other symbols
+   the lemma has. It can either be the name of a symbol ("add", "mul",
+   etc...), or the (short) name of a predicate ("inj" for
+   "injectivity", "id" for "identity", ...) or an abbreviation. We
+   list here the main abbreviations.
+
+  - A -- associativity, as in andbA : associative andb.
+  - AC -- right commutativity.
+  - ACA -- self-interchange (inner commutativity), e.g.,
+        orbACA : (a || b) || (c || d) = (a || c) || (b || d).
+  - b -- a boolean argument, as in andbb : idempotent andb.
+  - C -- commutativity, as in andbC : commutative andb,
+    or predicate complement, as in predC.
+  - CA -- left commutativity.
+  - D -- predicate difference, as in predD.
+  - E -- elimination, as in negbFE : ~~ b = false -> b.
+  - F or f -- boolean false, as in andbF : b && false = false.
+  - I -- left/right injectivity, as in addbI : right_injective addb or predicate  intersection, as in predI.
+  - l -- a left-hand operation, as andb_orl : left_distributive andb orb.
+  - N or n -- boolean negation, as in andbN : a && (~~ a) = false.
+  - P -- a characteristic property, often a reflection lemma, as in andP : reflec t (a /\ b) (a && b).
+  - r -- a right-hand operation, as orb_andr : rightt_distributive orb andb.
+  - T or t -- boolean truth, as in andbT: right_id true andb.
+  - U -- predicate union, as in predU.
+  - W -- weakening, as in in1W : {in D, forall x, P} -> forall x, P.
+
+  - 0 -- ring 0, as in addr0 : x + 0 = x.
+  - 1 -- ring 1, as in mulr1 : x * 1 = x.
+  - D -- ring addition, as in linearD : f (u + v) = f u + f v.
+  - B -- ring subtraction, as in opprB : - (x - y) = y - x.
+  - M -- ring multiplication, as in invfM : (x * y)^-1 = x^-1 * y^-1.
+  - Mn -- ring by nat multiplication, as in raddfMn : f (x *+ n) = f x *+ n.
+  - N -- ring opposite, as in mulNr : (- x) * y = - (x * y).
+  - V -- ring inverse, as in mulVr : x^-1 * x = 1.
+  - X -- ring exponentiation, as in rmorphX : f (x ^+ n) = f x ^+ n.
+  - Z -- (left) module scaling, as in linearZ : f (a *: v)  = s *: f v.
+
+** My own search idiom
+
+#<pre>Search _ "suffix1" "suffix2" (symbol|pattern)* in library.</pre>#
+
+** Examples
+*)
+Module Conventions.
+
+Search _ *%R "A" in GRing.Theory.
+
+Search _ "unit" in ssralg.
+
+Search _ "inj" in ssralg.
+
+Search _ "rmorph" "M" in ssralg.
+
+Search _ "rpred" "D" in ssralg.
+
+End Conventions.
+(** #</div># *)
+(** -------------------------------------------- *)
+(** #<div class='slide'>#
+
+* Toy application to graph theory
 
 We now illustrate the use of matrices on simple example of graph.  For simplicity, we take graphs on ordinal (type representing initial segments of natural numbers : [0, .., i-1])
 
