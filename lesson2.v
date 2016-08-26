@@ -28,7 +28,7 @@ Fixpoint foldr f z s := if s is x :: s' then f x (foldr f z s') else z.
 Definition f x := x.*2.
 Definition g x y := x + y.
 Definition r := [::1; 2; 3].
-Lemma bfold : foldr [eta (g \o f)] 0 r = 12.
+Lemma bfold : foldr (g \o f) 0 r = 12.
 Proof.
 rewrite /=.
 rewrite /f.
@@ -173,7 +173,7 @@ Proof.
 have bn := big_nth.
 rewrite (big_nth 0).
 rewrite /=.
-have H1 := big_mkord.
+have bm := big_mkord.
 rewrite big_mkord.
 by [].
 Qed.
@@ -279,7 +279,7 @@ Qed.
 Lemma bmon2 : \sum_(1 <= i < 4) i.*2 = 12.
 Proof.
 have bcn := big_cat_nat.
-rewrite (big_cat_nat _ _ _ (isT: 1 <= 2)).
+rewrite (big_cat_nat _ _ _ (isT : 1 <= 2)).
   rewrite /=.
   rewrite big_ltn //=.
   rewrite big_geq //.
@@ -371,8 +371,8 @@ Lemma bab4 :
   (\prod_(i < 3) \sum_(j < 4) (i ^ j)) = 
   \sum_(f : {ffun 'I_3 -> 'I_4}) \prod_(i < 3) (i ^ (f i)).
 Proof.
-have H := big_distr_big.
-have H1 := big_distr_big_dep.
+have bdb := big_distr_big.
+have bdbd := big_distr_big_dep.
 rewrite  (big_distr_big ord0).
 rewrite /=.
 apply: eq_bigl.
@@ -404,13 +404,12 @@ elim/big_ind: _.
   case: odd.
      by [].
   by [].
+rewrite /=.
 move=> i _.
 by rewrite odd_double.
 Qed.
 
 (** #</div># *)
-
-Definition leibnizn m n := m.+1 *  'C(m, n).
 
 (** -------------------------------------------- *)
 
@@ -418,6 +417,7 @@ Definition leibnizn m n := m.+1 *  'C(m, n).
      ** Leibniz Triangle
    *)
 
+Definition leibnizn m n := m.+1 *  'C(m, n).
 
 Notation "''L' ( n , m )" := (leibnizn n m)
   (at level 8, format "''L' ( n ,  m )") : nat_scope.
