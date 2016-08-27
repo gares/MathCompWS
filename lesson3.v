@@ -197,6 +197,46 @@ by []. by []. by []. by [].
 Fail rewrite {px}; by [].
 by [].
 Qed.
+(** #</div># *)
+
+(** --------------------------------------------
+#<div class='slide'>#
+** Finite functions
+
+Function whose domain is a finite type
+
+  - A finite type when the type for values is finite
+  - A special notation for functions from ordinals
+*)
+Module LessonSandbox2.
+
+Parameter T : finType.
+Parameters x y : T.
+
+Check [ffun z : T => z = y].
+Check [ffun z : T => z == y].
+Check [finType of {ffun T -> bool}].
+Check [ffun i : 'I_2 => if val i == 0 then x else y].
+Check [ffun i : 'I_2 => if i == ord0 then x else y] : T ^ 2.
+
+Lemma finfun_proof : [ffun i : 'I_2 => if i == ord0 then x else y]
+          (Ordinal (isT : 1 < 2)) = y.
+Proof.
+rewrite /=.  rewrite ffunE. rewrite /=. by [].
+Qed.
+
+Lemma finfun_proof2 : [ffun i : 'I_2 => if i == ord0 then x else y] =
+  [ffun i : 'I_2 => if val i == 1 then y else x].
+Proof.
+apply/ffunP.
+move => z. rewrite !ffunE /=.
+case: z => [[ | [ | z']] pz].
+    rewrite /=. by [].
+  rewrite /=. by [].
+rewrite /=. by [].
+Qed.
+
+(** #</div># *)
 
 (** --------------------------------------------
 #<div class='slide'>#
@@ -205,12 +245,8 @@ Qed.
  - obviously finite sets over a finite type are finite
  - obviously the type of these sets is finite 
 *)
-Module LessonSandbox2.
-
-Parameter T : finType.
 Check [finType of {set T}].
 Parameter A : {set T}.
-Parameters x y : T.
 Check #|A|.
 Check #|[set: T]|.
 Locate "#| _ |".
@@ -243,6 +279,75 @@ Check big_ord_recl.
 Check bigD1.
 Check big_setID.
 (** #</div># *)
+(** --------------------------------------------
+#<div class='slide'>#
+** Finite graphs
+
+Finite graphs are build on a finite type of nodes
+
+Three approaches
+  - Use a function to list all targets of edges
+  - The graph of a relation
+  - The graph of a function
+*)
+Definition mg := [:: (0,1); (1,0); (1,2); (3,3)].
+Definition mgr : rel 'I_4 :=
+   fun x y : 'I_4 => (val x, val y) \in mg.
+Check rgraph mgr.
+Check dfs_path (rgraph mgr) [::] ord0.
+Lemma graph_proof : dfs_path (rgraph mgr) [::] ord0 (Ordinal (isT : 2 < 4)).
+Search dfs_path.
+Search _ (grel (rgraph _)).
+have pp : path (grel (rgraph mgr)) ord0 [:: Ordinal (isT : 1 < 4); Ordinal (isT : 2 < 4)].
+  rewrite /=. rewrite andbT; apply/andP; split. 
+    rewrite mem_enum. by [].
+  rewrite mem_enum. by [].
+apply: (DfsPath pp).
+  by [].
+rewrite disjoint_sym.
+apply: disjoint0.
+Qed.
+
+Parameters (z : T) (g : T -> seq T).
+Hypothesis xny : x != y.
+Hypothesis xnz : x != z.
+Hypothesis ynz : y != z.
+Hypothesis g_xyz :
+  (g x == [::y]) && (g y == [:: x; z]).
+  
+Lemma graph_proof2 : dfs_path g [::] x z.
+Proof.
+have pp: path (grel g) x [::y;z].
+  rewrite /= andbT.
+  move/andP: g_xyz => [/eqP -> /eqP ->].
+  rewrite !inE. rewrite !eqxx. rewrite orbT. by [].
+apply (DfsPath pp).
+  rewrite /=. by [].
+rewrite disjoint_sym. rewrite disjoint0.
+by [].
+Qed.
+
+(** --------------------------------------------
+#<div class='slide'>#
+** Exercises
+
+Exercises taken from #<a href="http://www-sop.inria.fr/manifestations/MapSpringSchool/program.html">Map Spring School</a># (thanks to L. Rideau)
+ 
+*)
+Lemma inj_card_le (I J : finType) (f : I -> J) : injective f -> #|I| <= #|J|.
+
+Lemma ord1 : forall i : 'I_1, i = ord0.
+
+Lemma adds : forall (a b : T) (E : {set T}), 
+    a != b -> a \notin E -> b \notin E ->
+    #| a |:  (b |: E)| = #|E| + 2.
+
+(** State and prove the following statements
+
+ - E union F = (E minus F) union (F minus E) union (E inter F)
+*)
+(** #</div>#
+*)
 
 (** --------------------------------------------
 #<div class='slide'># 
