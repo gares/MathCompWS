@@ -126,19 +126,50 @@ Local Notation "a && b" := (andb a b).
 
 Lemma andbC b1 b2 : b1 && b2 = b2 && b1.
 Proof.
-(*D*) by case: b1; case: b2.
+(* fill in *)
 Admitted.
 
-Definition orb b1 b2 :=
-(*D*) if b1 then true else b2
-.
+(** 
+#
+<button onclick="hide('sol0')">Solution</button>
+<div id='sol0' class='solution'>
+<pre>
+by case: b1; case; b2.
+</pre>
+</div>
+#
+*)
+
+Definition orb (b1 b2 : bool) := (* fill in *) b1.
+
+(** 
+#
+<button onclick="hide('sol01')">Solution</button>
+<div id='sol01' class='solution'>
+<pre>
+if b1 then true else b2
+</pre>
+</div>
+#
+*)
 
 Local Notation "a || b" := (orb a b).
 
 Lemma negb_and b1 b2 : ~~ (b1 && b2) = ~~ b1 || ~~ b2.
 Proof.
+(* fill in *)
+Admitted.
+
+(** 
+#
+<button onclick="hide('sol02')">Solution</button>
+<div id='sol02' class='solution'>
+<pre>
 by case: b1; case: b2.
-Qed.
+</pre>
+</div>
+#
+*)
 
 End BoolLogic.
 
@@ -191,7 +222,7 @@ apply: contraL.
 move=> leq_p_m.
 (*Search dvdn addn.*)
 rewrite dvdn_addr.
-  (*Search eq (_ < _) (_ %| _).*)
+  (* Search eq (_ < _) (_ %| _). *)
   rewrite gtnNdvd.
     by [].
     by [].
@@ -242,9 +273,20 @@ Local Notation "'exists' x , p" := (ex (fun x => p)) (at level 200).
 Lemma andP (a b : bool) : reflect (a /\ b) (a && b).
 Proof.
 apply: (iffP idP). 
-(*D*)  by case: a; case: b.
-(*D*)by move=> [pa pb]; rewrite pa pb.
+(* fill in *)
 Admitted.
+
+(** 
+#
+<button onclick="hide('sol001')">Solution</button>
+<div id='sol001' class='solution'>
+<pre>
+  by case: a; case: b.
+by move=> [pa pb]; rewrite pa pb.
+</pre>
+</div>
+#
+*)
 
 End PropLogic.
 
@@ -267,7 +309,7 @@ Lemma ltngtP m n : compare_nat m n (m < n) (n < m) (m == n)
 Module ViewIPatCase.
 
 Lemma transitivity m n x :
-  m < x && x <= n -> m <= n.
+  (m < x) && (x <= n) -> m <= n.
 Proof.
 move=> /andP[/ltnW le_mx le_xn].
 by apply: leq_trans le_mx le_xn.
@@ -311,8 +353,7 @@ have: 1 < m`! + 1.
   by rewrite addn1 ltnS fact_gt0.
 move=> /pdivP[p pr_p p_dv_m1].
 exists p => //. 
-rewrite /= ltnNge.
-
+rewrite ltnNge.
 apply: contraL p_dv_m1 => p_le_m.
 by rewrite dvdn_addr ?dvdn_fact ?prime_gt0 // gtnNdvd ?prime_gt1.
 Qed.
@@ -320,6 +361,27 @@ Qed.
 End Primes.
 
 (** #</div># *)
+(** -------------------------------------------- *)
+
+(** #<div class="slide vfill">#
+** Wrap up
+
+ - logic of Coq
+  - lets you express programs
+  - Coq knows hot compute them
+  - their execution is a legit form of proof
+
+ - boolean predicates
+  - symbolic computation at hand
+  - EM at hand
+  - ... UIP at hand ...
+
+ - proof language
+  - small bricks
+  - compose well
+  - squeezing video game quite addictive ;-)
+
+ #</div># *)
 (** -------------------------------------------- *)
 
 (** #<div class='slide'>#
