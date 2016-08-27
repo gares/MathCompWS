@@ -115,7 +115,6 @@ Definition matrix_finMixin (R : finType) m n :=
   [finMixin of 'M[R]_(m, n) by <:].
 Canonical matrix_finType (R : finType) m n :=
   Eval hnf in FinType 'M[R]_(m, n) (matrix_finMixin R m n).
-
 (** #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
@@ -663,6 +662,7 @@ function select_current() {
   }
 }
 function init_slides() {
+  document.getElementById("document").style["padding-right"]="50px";
   var toolbar = document.getElementById('panel-wrapper');
   if (toolbar) {
   var tools = document.createElement("div");
