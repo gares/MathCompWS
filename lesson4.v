@@ -238,6 +238,21 @@ Proof. by rewrite mul_scalar_mx. Abort.
 Print mxtrace.
 Locate "\tr".
 
+Lemma mxtrace_mulC (R : comRingType) n (A B : 'M[R]_n) :
+  \tr (A *m B) = \tr (B *m A).
+Proof. Abort
+(**
+#<button onclick="hide('sol_mxtrace_mulC')">Solution</button>
+<div id='sol_mxtrace_mulC' class='solution'>
+<pre>
+rewrite /mxtrace (eq_bigr (fun i => \sum_j A i j * B j i)); last first.
+  by move=> i _; rewrite mxE.
+rewrite exchange_big /=; apply: eq_bigr => i _.
+by rewrite mxE; apply: eq_bigr => j _; rewrite mulrC.
+</pre>
+</div>
+*)
+
 Print trmx.
 Locate "^T".
 
@@ -566,7 +581,6 @@ rewrite (eq_bigr _ (fun j _ => (mxE _ _ i j))).
 rewrite -mulr_suml divff //= -natr_sum pnatr_eq0 -big_mkcond /=.
 rewrite sum1dep_card cards_eq0; apply/set0Pn.
 by have [j ?] := g_connects i; exists j; rewrite inE.
-Qed.
 </pre>
 </div>
 #
