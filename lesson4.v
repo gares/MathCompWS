@@ -240,7 +240,7 @@ Locate "\tr".
 
 Lemma mxtrace_mulC (R : comRingType) n (A B : 'M[R]_n) :
   \tr (A *m B) = \tr (B *m A).
-Proof. Abort
+Proof. Abort.
 (**
 #<button onclick="hide('sol_mxtrace_mulC')">Solution</button>
 <div id='sol_mxtrace_mulC' class='solution'>
