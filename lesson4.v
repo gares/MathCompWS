@@ -17,7 +17,7 @@ Extensive documentation in the header of the library #<a target='_blank' class='
 *)
 (** -------------------------------------------- *)
 (**
-* Roadmap for the lesson:
+* Roadmap for the lesson
  - General facts about matrices:
    - definition of matrices
    - main theorems to handle matrices (reduction and comparison)
@@ -203,7 +203,12 @@ Fail Lemma test (R : ringType) m n (A B : 'M[R]_(m, n)) :
 Lemma test (R : ringType) m n p
   (A : 'M[R]_(m, n)) (B C : 'M[R]_(n, p)) :
   A *m (B + C) = (A *m B) + (A *m C).
-Proof. rewrite mulmxDr. Abort.
+Proof.
+apply/matrixP => i j; rewrite !mxE.
+Restart.
+Check mulmxDr.
+rewrite mulmxDr.
+Abort.
 (** #</div># *)
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
@@ -273,54 +278,55 @@ Or in the presence of a property denoted by a nary or unary predicate:
    head symbol of a theorem. It can also simply be the main object of
    study, head symbol or not. It is usually either
 
-  - one of the main symbols of the theory at hand. For example, for
-    ssralg, it will be "opp", "add", "mul", etc...
+  - one of the main symbols of the theory at hand. For example, it will be #<code>opp</code>#, #<code>add</code>#, #<code>mul</code>#, etc...
 
   - or a special "canonical" operation, such as a ring morphism or a
-    subtype predicate. e.g. "linear", "raddf", "rmorph", "rpred", etc ...
+    subtype predicate. e.g. #<code>linear</code>#, #<code>raddf</code>#, #<code>rmorph</code>#, #<code>rpred</code>#, etc ...
 
- - "condition" is used when the lemma applies under some hypothesis. As in
+ - "condition" is used when the lemma applies under some hypothesis.
 
- - "suffixes" are there to refine what shape and/or what other symbols
-   the lemma has. It can either be the name of a symbol ("add", "mul",
-   etc...), or the (short) name of a predicate ("inj" for
-   "injectivity", "id" for "identity", ...) or an abbreviation. We
-   list here the main abbreviations.
+ - "suffixes" are there to refine what shape and/or what other symbols  the lemma has. It can either be the name of a symbol ("add", "mul",  etc...), or the (short) name of a predicate ("#<code>inj</code>#" for "#<code>injectivity</code>#", "#<code>id</code>#" for "identity", ...) or an abbreviation.
 
-  - A -- associativity, as in andbA : associative andb.
+Abbreviations are in the header of the file which introduce them. We list here the main abbreviations.
+
+  - A -- associativity, as in #<code>andbA : associative andb.</code>#
   - AC -- right commutativity.
   - ACA -- self-interchange (inner commutativity), e.g.,
-        orbACA : (a || b) || (c || d) = (a || c) || (b || d).
-  - b -- a boolean argument, as in andbb : idempotent andb.
-  - C -- commutativity, as in andbC : commutative andb,
-    or predicate complement, as in predC.
+        #<code>orbACA : (a || b) || (c || d) = (a || c) || (b || d).</code>#
+  - b -- a boolean argument, as in #<code>andbb : idempotent andb.</code>#
+  - C -- commutativity, as in #<code>andbC : commutative andb</code>#,
+    or predicate complement, as in #<code>predC.</code>#
   - CA -- left commutativity.
-  - D -- predicate difference, as in predD.
-  - E -- elimination, as in negbFE : ~~ b = false -> b.
-  - F or f -- boolean false, as in andbF : b && false = false.
-  - I -- left/right injectivity, as in addbI : right_injective addb or predicate  intersection, as in predI.
-  - l -- a left-hand operation, as andb_orl : left_distributive andb orb.
-  - N or n -- boolean negation, as in andbN : a && (~~ a) = false.
-  - P -- a characteristic property, often a reflection lemma, as in andP : reflec t (a /\ b) (a && b).
-  - r -- a right-hand operation, as orb_andr : rightt_distributive orb andb.
-  - T or t -- boolean truth, as in andbT: right_id true andb.
-  - U -- predicate union, as in predU.
-  - W -- weakening, as in in1W : {in D, forall x, P} -> forall x, P.
+  - D -- predicate difference, as in #<code>predD.</code>#
+  - E -- elimination, as in #<code>negbFE : ~~ b = false -> b</code>#.
+  - F or f -- boolean false, as in #<code>andbF : b && false = false.</code>#
+  - I -- left/right injectivity, as in #<code>addbI : right_injective addb</code># or predicate  intersection, as in #<code>predI.</code>#
+  - l -- a left-hand operation, as #<code>andb_orl : left_distributive andb orb.</code>#
+  - N or n -- boolean negation, as in #<code>andbN : a && (~~ a) = false.</code>#
+  - n -- alternatively, it is a natural number argument
+  - P -- a characteristic property, often a reflection lemma, as in
+     #<code>andP : reflect (a /\ b) (a && b)</code>#.
+  - r -- a right-hand operation, as #<code>orb_andr : right_distributive orb andb.</code>#
+      -- alternatively, it is a ring argument
+  - T or t -- boolean truth, as in #<code>andbT: right_id true andb.</code>#
+  - U -- predicate union, as in #<code>predU</code>#.
+  - W -- weakening, as in #<code>in1W : {in D, forall x, P} -> forall x, P.</code>#
+  - 0 -- ring 0, as in #<code>addr0 : x + 0 = x.</code>#
+  - 1 -- ring 1, as in #<code>mulr1 : x * 1 = x.</code>#
+  - D -- ring addition, as in #<code>linearD : f (u + v) = f u + f v.</code>#
+  - B -- ring subtraction, as in #<code>opprB : - (x - y) = y - x.</code>#
+  - M -- ring multiplication, as in #<code>invfM : (x * y)^-1 = x^-1 * y^-1.</code>#
+  - Mn -- ring by nat multiplication, as in #<code>raddfMn : f (x *+ n) = f x *+ n.</code>#
+  - mx -- a matrix argument
+  - N -- ring opposite, as in #<code>mulNr : (- x) * y = - (x * y).</code>#
+  - V -- ring inverse, as in #<code>mulVr : x^-1 * x = 1.</code>#
+  - X -- ring exponentiation, as in #<code>rmorphX : f (x ^+ n) = f x ^+ n.</code>#
+  - Z -- (left) module scaling, as in #<code>linearZ : f (a *: v)  = s *: f v.</code>#
+  - z -- a int operation
 
-  - 0 -- ring 0, as in addr0 : x + 0 = x.
-  - 1 -- ring 1, as in mulr1 : x * 1 = x.
-  - D -- ring addition, as in linearD : f (u + v) = f u + f v.
-  - B -- ring subtraction, as in opprB : - (x - y) = y - x.
-  - M -- ring multiplication, as in invfM : (x * y)^-1 = x^-1 * y^-1.
-  - Mn -- ring by nat multiplication, as in raddfMn : f (x *+ n) = f x *+ n.
-  - N -- ring opposite, as in mulNr : (- x) * y = - (x * y).
-  - V -- ring inverse, as in mulVr : x^-1 * x = 1.
-  - X -- ring exponentiation, as in rmorphX : f (x ^+ n) = f x ^+ n.
-  - Z -- (left) module scaling, as in linearZ : f (a *: v)  = s *: f v.
+** My most used search pattern
 
-** My own search idiom
-
-#<pre>Search _ "suffix1" "suffix2" (symbol|pattern)* in library.</pre>#
+#<pre>Search _ "prefix" "suffix"* (symbol|pattern)* in library.</pre>#
 
 ** Examples
 *)
@@ -417,7 +423,6 @@ Lemma g1path g x y :
                   else set0 : {set 1.-tuple T}.
 Proof. Admitted.
 (**
-The cardinality proof is left as an exercise in finite types and finite sets, but contains nothing about matrices. You may as well skip it if you want to focus on matrices.
 #
 <button onclick="hide('sol_card_gSpath')">Solution</button>
 <div id='sol_card_gSpath' class='solution'>
@@ -428,6 +433,7 @@ rewrite -[_ == _ :> _.-tuple _]val_eqE eqseq_cons eqxx andbT.
 by have [->|neq_zy] := altP eqP; [case: g| rewrite andbF if_same].
 </pre>
 </div>
+This proof is left as an exercise in finite types and finite sets, but contains nothing about matrices. You may as well skip it if you want to focus on matrices.
 #
 *)
 Lemma card_g1path g x y : #|1.-path g x y| = (g x y).
@@ -662,7 +668,7 @@ function select_current() {
   }
 }
 function init_slides() {
-  document.getElementById("document").style["padding-right"]="50px";
+  document.getElementById("document").style["padding-right"]="8em";
   var toolbar = document.getElementById('panel-wrapper');
   if (toolbar) {
   var tools = document.createElement("div");
