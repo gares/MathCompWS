@@ -205,11 +205,8 @@ Lemma test (R : ringType) m n p
   A *m (B + C) = (A *m B) + (A *m C).
 Proof.
 apply/matrixP => i j; rewrite !mxE.
-Restart.
-Check mulmxDr.
-rewrite mulmxDr.
 Abort.
-(** #</div># *)
+Check mulmxDr.
 (** -------------------------------------------- *)
 (** #<div class='slide'>#
 *** square matrices with non zero size have a ring canonical structure.
