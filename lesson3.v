@@ -23,11 +23,12 @@ Understand the benefits and usage of finite types.
 
 (** -------------------------------------------- *)
 
-(** #<div class='slide'># 
+(** #<div class='slide vfill'># 
 ** Formation principle
 
 For a finite type, you can enumerate the elements
-the enumeration is a simple piece of data (based on sequences)
+
+The enumeration is a simple piece of data (based on sequences)
  - The enumeration gives some computation principle
  - Elements of a finite type can be indexed
 
